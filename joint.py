@@ -9,8 +9,8 @@ class Joint:
             raise Exception("Unable to instantiate joint: %s", joint_config.common_name)
         self.joint_config = joint_config
 
-    def turn(self, to_angle:int, await_completion=False):
-        logging.debug("Turning joint: %s", self.joint_config.common_name)
+    def turn(self, to_angle:float, await_completion=False):
+        logging.info("Turning joint: %s to %s", self.joint_config.common_name, to_angle)
         if (to_angle > self.joint_config.max_angle or
                 to_angle < self.joint_config.min_angle):
             logging.error("Angle for joint: %s out of range", self.joint_config.common_name)
@@ -57,7 +57,7 @@ class Joint:
         if await_completion:
             sleep(self.__get_servo_sleep_time_seconds(angle_delta))
 
-    def get_current_angle(self) -> int:
+    def get_current_angle(self) -> float:
         logging.debug("Angle value of joint: %s is %f", self.joint_config.common_name, KIT.servo[self.joint_config.channel].angle)
         return KIT.servo[self.joint_config.channel].angle
 
