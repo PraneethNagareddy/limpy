@@ -15,7 +15,7 @@ class Joint:
                 to_angle < self.joint_config.min_angle):
             logging.error("Angle for joint: %s out of range", self.joint_config.common_name)
         angle_delta = abs(self.get_current_angle() - to_angle)
-        KIT.servo[self.joint_config.channel] = to_angle
+        KIT.servo[self.joint_config.channel].angle = to_angle
         if await_completion:
             sleep(self.__get_servo_sleep_time_seconds(angle_delta))
 
@@ -43,7 +43,7 @@ class Joint:
                 to_angle < self.joint_config.min_angle):
             logging.error("Angle for joint: %s out of range", self.joint_config.common_name)
         angle_delta = abs(self.get_current_angle() - to_angle)
-        KIT.servo[self.joint_config.channel] = to_angle
+        KIT.servo[self.joint_config.channel].angle = to_angle
         if await_completion:
             sleep(self.__get_servo_sleep_time_seconds(angle_delta))
 
