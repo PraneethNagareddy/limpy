@@ -33,9 +33,9 @@ front_right_leg = Leg(front_right_hip_joint, front_right_knee_joint, front_right
 rear_right_hip_config = JointConfig("TowerPro MG90S", "Positional", "Rear Right Hip", channel=14)
 rear_right_knee_config = JointConfig("TowerPro MG90S", "Positional", "Rear Right knee", channel=13)
 rear_right_ankle_config = JointConfig("TowerPro MG90S", "Positional", "Rear Right Ankle", channel=12)
-rear_right_knee_joint = Joint(front_right_knee_config)
-rear_right_ankle_joint = Joint(front_right_ankle_config)
-rear_right_hip_joint = Joint(front_right_hip_config)
+rear_right_knee_joint = Joint(rear_right_knee_config)
+rear_right_ankle_joint = Joint(rear_right_ankle_config)
+rear_right_hip_joint = Joint(rear_right_hip_config)
 rear_right_leg = Leg(rear_right_hip_joint, rear_right_knee_joint, rear_right_ankle_joint, Legs.REAR_RIGHT)
 
 
