@@ -16,6 +16,7 @@ class Leg:
         self.hip_joint.turn_smooth(180)
         self.ankle_joint.turn_smooth(0)
 
+
     def rest(self):
         #TODO
         pass
