@@ -1,3 +1,5 @@
+import time
+
 from spider import Spider
 from joint_config import JointConfig
 from joint import Joint
@@ -45,3 +47,5 @@ spider:Spider = Spider(front_right_leg=front_right_leg,
 
 
 spider.startup()
+time.sleep(20)
+spider.hibernate()

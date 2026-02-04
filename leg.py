@@ -12,8 +12,9 @@ class Leg:
 
 
     def terminate(self):
-        #TODO
-        pass
+        self.knee_joint.turn_smooth(90)
+        self.hip_joint.turn_smooth(180)
+        self.ankle_joint.turn_smooth(0)
 
     def rest(self):
         #TODO
@@ -52,6 +53,38 @@ class Leg:
     def lean_up(self, lean_factor):
         #TODO
         pass
+
+    def startup(self):
+        match self.position:
+            case Legs.FRONT_LEFT:
+                self.ankle_joint.turn_smooth(0)
+                self.knee_joint.turn_smooth(90)
+                self.hip_joint.turn_smooth(50)
+                self.ankle_joint.turn_smooth(135)
+                self.knee_joint.turn_smooth(120)
+                logging.info("Front left leg initiated")
+            case Legs.FRONT_RIGHT:
+                self.ankle_joint.turn_smooth(0)
+                self.knee_joint.turn_smooth(90)
+                self.hip_joint.turn_smooth(100)
+                self.ankle_joint.turn_smooth(0)
+                self.knee_joint.turn_smooth(120)
+                logging.info("Front right leg initiated")
+            case Legs.REAR_LEFT:
+                self.ankle_joint.turn_smooth(0)
+                self.knee_joint.turn_smooth(90)
+                self.hip_joint.turn_smooth(150)
+                self.ankle_joint.turn_smooth(75)
+                self.knee_joint.turn_smooth(150)
+                logging.info("Rear left leg initiated")
+            case Legs.REAR_RIGHT:
+                self.ankle_joint.turn_smooth(0)
+                self.knee_joint.turn_smooth(90)
+                self.hip_joint.turn_smooth(90)
+                self.ankle_joint.turn_smooth(135)
+                self.knee_joint.turn_smooth(120)
+                logging.info("Rear right leg initiated")
+
 
     def init_ankle(self):
         target_angle = 0
@@ -93,7 +126,7 @@ class Leg:
             case Legs.REAR_RIGHT:
                 target_angle = 90
         logging.debug("Turning hip to: %s", target_angle)
-        self.hip_joint.turn_smooth(target_angle)
+        self.hip_joint.turn(target_angle)
 
     def init_support_weight(self):
         target_ankle_angle = 0
@@ -112,6 +145,6 @@ class Leg:
                 target_ankle_angle = 135
                 target_knee_angle = 120
         logging.debug("Turning ankle to: %s", target_ankle_angle)
-        self.ankle_joint.turn_smooth(target_ankle_angle)
+        self.ankle_joint.turn(target_ankle_angle)
         logging.debug("Turning knee to: %s", target_knee_angle)
-        self.knee_joint.turn_smooth(target_knee_angle)
+        self.knee_joint.turn(target_knee_angle)

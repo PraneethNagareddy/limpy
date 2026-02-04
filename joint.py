@@ -59,8 +59,6 @@ class Joint:
 
     def get_current_angle(self) -> float:
         logging.info("Angle value of joint: %s is %f", self.joint_config.common_name, KIT.servo[self.joint_config.channel].angle)
-        print("channel %s", self.joint_config.channel)
-        print("current angle: %s", KIT.servo[self.joint_config.channel].angle)
         return KIT.servo[self.joint_config.channel].angle
 
     def __get_servo_sleep_time_seconds(joint, angle) -> float:
