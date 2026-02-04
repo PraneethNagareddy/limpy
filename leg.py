@@ -1,5 +1,5 @@
 from config import *
-from legs import Legs
+from enums import Legs
 from joint import Joint
 import logging
 

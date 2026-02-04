@@ -4,7 +4,7 @@ from spider import Spider
 from joint_config import JointConfig
 from joint import Joint
 from leg import Leg
-from legs import Legs
+from enums import Legs
 
 front_left_hip_config = JointConfig("TowerPro MG90S", "Positional", "Front Left Hip", channel=2)
 front_left_knee_config = JointConfig("TowerPro MG90S", "Positional", "Front Left knee", channel=1)
