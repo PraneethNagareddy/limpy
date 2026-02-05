@@ -64,20 +64,8 @@ class Spider:
         logging.info("Spider shutdown!")
 
     def hibernate(self):
-        front_left_thread = threading.Thread(target=self.front_left_leg.rest())
-        front_right_thread = threading.Thread(target=self.front_right_leg.rest())
-        rear_left_thread = threading.Thread(target=self.rear_left_leg.rest())
-        rear_right_thread = threading.Thread(target=self.rear_right_leg.rest())
-
-        front_left_thread.start()
-        front_right_thread.start()
-        rear_left_thread.start()
-        rear_right_thread.start()
-
-        front_left_thread.join()
-        front_right_thread.join()
-        rear_left_thread.join()
-        rear_right_thread.join()
+        for __leg in self.__legs:
+            __leg.rest()
         logging.info("Spider in hibernate!")
 
     def walk_forward(self, steps):
