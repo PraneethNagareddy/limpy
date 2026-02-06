@@ -13,7 +13,7 @@ class Leg:
 
     def terminate(self):
         self.ankle_joint.turn_smooth(90)
-        self.knee_joint.turn_smooth(0)
+        self.knee_joint.turn_smooth(180)
         self.hip_joint.turn_smooth(180)
 
 
