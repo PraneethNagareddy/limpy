@@ -1,4 +1,4 @@
-from config import KIT
+from servo_kit_factory import ServoKitFactory
 from joint_config import JointConfig
 from time import sleep
 import logging
@@ -8,6 +8,7 @@ class Joint:
         if joint_config.channel == -1:
             raise Exception("Unable to instantiate joint: %s", joint_config.common_name)
         self.joint_config = joint_config
+        self.KIT = ServoKitFactory.get_servo_kit(joint_config.i2c_address)
 
     def turn(self, to_angle:float, await_completion=False):
         logging.info("Turning joint: %s to %s", self.joint_config.common_name, to_angle)
@@ -15,7 +16,7 @@ class Joint:
                 to_angle < self.joint_config.min_angle):
             logging.error("Angle for joint: %s out of range", self.joint_config.common_name)
         angle_delta = abs(self.get_current_angle() - to_angle)
-        KIT.servo[self.joint_config.channel].angle = to_angle
+        self.KIT.servo[self.joint_config.channel].angle = to_angle
         if await_completion:
             sleep(self.__get_servo_sleep_time_seconds(angle_delta))
 
@@ -24,16 +25,16 @@ class Joint:
         if (to_angle > self.joint_config.max_angle or
                 to_angle < self.joint_config.min_angle):
             logging.error("Angle for joint: %s out of range", self.joint_config.common_name)
-        init_angle = KIT.servo[self.joint_config.channel].angle
+        init_angle = self.KIT.servo[self.joint_config.channel].angle
         current_angle = init_angle
         while abs(current_angle - to_angle) > 1:
             if to_angle > init_angle:
                 current_angle += 1
             else:
                 current_angle -= 1
-            KIT.servo[self.joint_config.channel].angle = current_angle
+            self.KIT.servo[self.joint_config.channel].angle = current_angle
             sleep(time_interval)
-        KIT.servo[self.joint_config.channel].angle = to_angle
+        self.KIT.servo[self.joint_config.channel].angle = to_angle
         sleep(time_interval * 2)
 
     def reverse_turn(self, turned_angle, await_completion=False):
@@ -43,7 +44,7 @@ class Joint:
                 to_angle < self.joint_config.min_angle):
             logging.error("Angle for joint: %s out of range", self.joint_config.common_name)
         angle_delta = abs(self.get_current_angle() - to_angle)
-        KIT.servo[self.joint_config.channel].angle = to_angle
+        self.KIT.servo[self.joint_config.channel].angle = to_angle
         if await_completion:
             sleep(self.__get_servo_sleep_time_seconds(angle_delta))
 
@@ -53,13 +54,13 @@ class Joint:
     def reset(self, await_completion=False):
         logging.info("Resetting joint: %s", self.joint_config.common_name)
         angle_delta = abs(self.get_current_angle() - self.joint_config.default_angle)
-        KIT.servo[self.joint_config.channel].angle = self.joint_config.default_angle
+        self.KIT.servo[self.joint_config.channel].angle = self.joint_config.default_angle
         if await_completion:
             sleep(self.__get_servo_sleep_time_seconds(angle_delta))
 
     def get_current_angle(self) -> float:
-        logging.info("Angle value of joint: %s is %f", self.joint_config.common_name, KIT.servo[self.joint_config.channel].angle)
-        return KIT.servo[self.joint_config.channel].angle
+        logging.info("Angle value of joint: %s is %f", self.joint_config.common_name, self.KIT.servo[self.joint_config.channel].angle)
+        return self.KIT.servo[self.joint_config.channel].angle
 
     def __get_servo_sleep_time_seconds(joint, angle) -> float:
         return (joint.joint_config.turn_time_per_degree_millis * angle) / 1000
