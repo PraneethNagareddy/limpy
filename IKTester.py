@@ -4,7 +4,16 @@ from adafruit_servokit import ServoKit
 import time
 import sys
 
-angles = IK.solve(90,10,-40)
+
+if not len(sys.argv) != 3:
+        print("invalid usage. Provide exactly three arguments, i.e X,Y,Z co-ordinates")
+
+X = int(sys.argv[1])
+Y = int(sys.argv[2])
+Z = int(sys.argv[3])
+
+
+angles = IK.solve(X,Y,Z)
 print(angles)
 
 kit = ServoKit(channels = 16, address=0x40)
