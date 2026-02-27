@@ -5,6 +5,7 @@ import time
 import sys
 
 angles = IK.solve(90,10,-40)
+print(angles)
 
 kit = ServoKit(channels = 16, address=0x40)
 
