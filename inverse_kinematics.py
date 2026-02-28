@@ -36,9 +36,26 @@ class IK:
         knee_angle_part2 = math.atan2(z_eff, h_eff)
 
         knee_angle_rad = knee_angle_part1 + knee_angle_part2
+        print("IK Angles:", math.degrees(hip_angle_rad), math.degrees(knee_angle_rad), math.degrees(ankle_angle_rad))
 
-        return (
+        return get_servo_angles(
             math.degrees(hip_angle_rad),
             math.degrees(knee_angle_rad),
             math.degrees(ankle_angle_rad)
         )
+
+
+def get_servo_angles(ik_hip, ik_knee, ik_ankle, mount_angle=45):
+    # 1. Hip Adjustment
+    # Centers the servo at 90 when the leg points at its mount angle
+    s_hip = 90 + (ik_hip - mount_angle)
+
+    # 2. Knee Adjustment
+    # If ik_knee is 90, result is 90 (Horizontal)
+    s_knee = 90 + (90 - ik_knee)
+
+    # 3. Ankle Adjustment
+    # If ik_ankle is 90, result is 90 (Vertical)
+    s_ankle = 90 + (90 - ik_ankle)
+
+    return s_hip, s_knee, s_ankle
