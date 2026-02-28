@@ -1,44 +1,42 @@
 import math
 from typing import Tuple
-from config import FEMUR_LENGTH_MM, TIBIA_LENGTH_MM
-
-# Assuming FEMUR_LENGTH_MM and TIBIA_LENGTH_MM are imported from config
+from config import FEMUR_LENGTH_MM, TIBIA_LENGTH_MM, COXA_LENGTH_MM
 
 class IK:
     @staticmethod
     def solve(x, y, z, right_handed=True) -> Tuple[float, float, float]:
-        # 1. Coordinate System Adjustment
         if not right_handed:
-            x, y = y, x  # Proper way to swap in Python
+            x, y = y, x
 
-        # 2. Distance Calculations
-        h = math.hypot(x, y)  # Distance on the XY plane
-        l = math.hypot(h, z)  # Total distance from hip to foot
-
-        # 3. Reachability Check (Prevent acos crashes)
-        max_reach = FEMUR_LENGTH_MM + TIBIA_LENGTH_MM
-        min_reach = abs(FEMUR_LENGTH_MM - TIBIA_LENGTH_MM)
-
-        if l > max_reach or l < min_reach:
-            # Handle out-of-bounds: clip to max reach or raise error
-            l = max_reach if l > max_reach else min_reach
-
-        # 4. Solve Hip Angle
+        # 1. Hip Angle (remains the same)
         hip_angle_rad = math.atan2(y, x)
 
-        # 5. Solve Ankle (Knee-to-Tibia) Angle
-        # Using Law of Cosines: c^2 = a^2 + b^2 - 2ab*cos(C)
+        # 2. Total distance from the hip axis to the foot on the XY plane
+        h_total = math.hypot(x, y)
+
+        # 3. Effective horizontal reach for the Femur/Tibia triangle
+        # We subtract the Coxa because it's a fixed horizontal distance
+        h_eff = h_total - COXA_LENGTH_MM
+
+        # 4. Actual reach length for the triangle (from femur start to foot)
+        l = math.hypot(h_eff, z)
+
+        # Reachability Check
+        max_reach = FEMUR_LENGTH_MM + TIBIA_LENGTH_MM
+        if l > max_reach:
+            l = max_reach
+
+        # 5. Solve Ankle (Law of Cosines)
         cos_ankle = (FEMUR_LENGTH_MM ** 2 + TIBIA_LENGTH_MM ** 2 - l ** 2) / (2 * FEMUR_LENGTH_MM * TIBIA_LENGTH_MM)
-        # Standardize range to avoid floating point errors slightly outside [-1, 1]
         ankle_angle_rad = math.acos(max(-1, min(1, cos_ankle)))
 
-        # 6. Solve Knee (Hip-to-Femur) Angle
-        # Angle between femur and the line 'l'
+        # 6. Solve Knee
+        # Part 1: Internal angle of the femur/tibia triangle
         knee_a = (l ** 2 + FEMUR_LENGTH_MM ** 2 - TIBIA_LENGTH_MM ** 2) / (2 * l * FEMUR_LENGTH_MM)
         knee_angle_part1 = math.acos(max(-1, min(1, knee_a)))
 
-        # Angle of the leg elevation
-        knee_angle_part2 = math.atan2(z, h)
+        # Part 2: Angle of the leg elevation relative to the floor
+        knee_angle_part2 = math.atan2(z, h_eff)
 
         knee_angle_rad = knee_angle_part1 + knee_angle_part2
 
