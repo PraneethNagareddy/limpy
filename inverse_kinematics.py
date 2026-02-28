@@ -24,7 +24,7 @@ class IK:
             l = max_reach if l > max_reach else min_reach
 
         # 4. Solve Hip Angle
-        hip_angle_rad = math.atan2(x, y)
+        hip_angle_rad = math.atan2(y, x)
 
         # 5. Solve Ankle (Knee-to-Tibia) Angle
         # Using Law of Cosines: c^2 = a^2 + b^2 - 2ab*cos(C)
