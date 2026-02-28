@@ -13,13 +13,13 @@ def __get_servo_sleep_time_seconds(joint, angle) -> float:
     return (joint.joint_config.turn_time_per_degree_millis * angle) / 1000
 
 
-def move_servos_with_easing(targets, duration, refresh_rate=0.02):
+def move_joint_with_sine_easing(targets, duration_sec, refresh_rate=0.02):
     """
     targets: List of (joint, start_angle, end_angle)
     duration: Total time for the move in seconds
     refresh_rate: Delay between updates (0.02 = 50Hz)
     """
-    steps = int(duration / refresh_rate)
+    steps = int(duration_sec / refresh_rate)
 
     for i in range(steps + 1):
         # Calculate progress from 0.0 to 1.0

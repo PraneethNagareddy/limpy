@@ -1,3 +1,5 @@
+import math
+
 from servo_kit_factory import ServoKitFactory
 from joint_config import JointConfig
 from time import sleep
@@ -9,6 +11,7 @@ class Joint:
             raise Exception("Unable to instantiate joint: %s", joint_config.common_name)
         self.joint_config = joint_config
         self.KIT = ServoKitFactory.get_servo_kit(joint_config.i2c_address)
+        self.KIT.servo[self.joint_config.channel].set_pulse_width_range(self.joint_config.pulse_width_min, self.joint_config.pulse_width_max)
 
     def turn(self, to_angle:float, await_completion=False):
         logging.info("Turning joint: %s to %s", self.joint_config.common_name, to_angle)
@@ -53,7 +56,8 @@ class Joint:
 
     def reset(self, await_completion=False):
         logging.info("Resetting joint: %s", self.joint_config.common_name)
-        angle_delta = abs(self.get_current_angle() - self.joint_config.default_angle)
+        current_angle = 180 if math.isnan(self.get_current_angle()) else self.get_current_angle()
+        angle_delta = abs(current_angle - self.joint_config.default_angle)
         self.KIT.servo[self.joint_config.channel].angle = self.joint_config.default_angle
         if await_completion:
             sleep(self.__get_servo_sleep_time_seconds(angle_delta))
@@ -61,6 +65,12 @@ class Joint:
     def get_current_angle(self) -> float:
         logging.info("Angle value of joint: %s is %f", self.joint_config.common_name, self.KIT.servo[self.joint_config.channel].angle)
         return self.KIT.servo[self.joint_config.channel].angle
+
+    def validate_and_reset(self):
+        current_angle = self.get_current_angle()
+        if math.isnan(current_angle):
+            logging.info("Servo angle is NaN. Resetting the servo")
+            self.reset()
 
     def __get_servo_sleep_time_seconds(joint, angle) -> float:
         return (joint.joint_config.turn_time_per_degree_millis * angle) / 1000

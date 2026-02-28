@@ -1,6 +1,8 @@
 from config import *
+from joint_utils import move_joint_with_sine_easing as turn_joints_ease
 from enums import Legs
 from joint import Joint
+from inverse_kinematics import IK
 import logging
 
 class Leg:
@@ -21,8 +23,12 @@ class Leg:
         #TODO
         pass
 
-    def move_to_position(x_pos, y_pos, z_pos) -> tuple:
-        return 0, 0, 0
+    def move_to_position(self, x_target, y_target, z_target):
+        (hip_angle, knee_angle, ankle_angle) = IK.solve(x_target, y_target, z_target)
+        self.hip_joint.validate_and_reset()
+        self.knee_joint.validate_and_reset()
+        self.ankle_joint.validate_and_reset()
+        turn_joints_ease([(self.hip_joint, self.hip_joint.get_current_angle(), hip_angle), (self.hip_joint, self.hip_joint.get_current_angle(), hip_angle), (self.hip_joint, self.hip_joint.get_current_angle(), hip_angle)], duration_sec=0.5)
 
     def move_to_stable_position(self):
         self.hip_joint.turn(to_angle=HIP_JOINT_STEP_ANGLE_FRONT, await_completion=False)

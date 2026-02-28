@@ -17,6 +17,9 @@ angles = IK.solve(X,Y,Z)
 print(angles)
 
 kit = ServoKit(channels = 16, address=0x40)
+kit.servo[14].set_pulse_width_range(450, 2650)
+kit.servo[12].set_pulse_width_range(450, 2650)
+kit.servo[0].set_pulse_width_range(450, 2650)
 
 kit.servo[14].angle = angles[0]
 time.sleep(0.5)
