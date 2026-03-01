@@ -1,3 +1,4 @@
+import logging
 import math
 from typing import Tuple
 from config import FEMUR_LENGTH_MM, TIBIA_LENGTH_MM, COXA_LENGTH_MM, COXA_Z_OFFSET_MM
@@ -36,7 +37,7 @@ class IK:
         knee_angle_part2 = math.atan2(z_eff, h_eff)
 
         knee_angle_rad = knee_angle_part1 + knee_angle_part2
-        print("IK Angles:", math.degrees(hip_angle_rad), math.degrees(knee_angle_rad), math.degrees(ankle_angle_rad))
+        logging.info("IK Angles:", math.degrees(hip_angle_rad), math.degrees(knee_angle_rad), math.degrees(ankle_angle_rad))
 
         return get_servo_angles(
             math.degrees(hip_angle_rad),

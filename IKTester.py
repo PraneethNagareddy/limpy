@@ -14,7 +14,7 @@ Z = int(sys.argv[3])
 
 
 angles = IK.solve(X,Y,Z)
-print(angles)
+print("Servo Angles:", angles)
 
 kit = ServoKit(channels = 16, address=0x40)
 kit.servo[14].set_pulse_width_range(450, 2650)
