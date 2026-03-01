@@ -47,16 +47,19 @@ class IK:
 
 
 def get_servo_angles(ik_hip, ik_knee, ik_ankle, mount_angle=45):
-    # 1. Hip Adjustment
-    # Centers the servo at 90 when the leg points at its mount angle
+    # 1. Hip: Center is 90 at mount_angle
+    # ik_hip increases -> servo moves further away from 0.
     s_hip = 90 + (ik_hip - mount_angle)
 
-    # 2. Knee Adjustment
-    # If ik_knee is 90, result is 90 (Horizontal)
-    s_knee = 90 + (90 - ik_knee)
+    # 2. Knee: Direct Mapping
+    # 0 = Up, 90 = Horizontal, 180 = Down.
+    # ik_knee follows this naturally.
+    s_knee = ik_knee
 
-    # 3. Ankle Adjustment
-    # If ik_ankle is 90, result is 90 (Vertical)
-    s_ankle = 90 + (90 - ik_ankle)
+    # 3. Ankle: Direct Mapping
+    # 0 = Inward, 90 = Vertical, 180 = Outward.
+    # When ik_ankle is 90 (right angle), the tibia is vertical.
+    # When ik_ankle increases (leg straightens), servo moves toward 180.
+    s_ankle = ik_ankle
 
     return s_hip, s_knee, s_ankle
