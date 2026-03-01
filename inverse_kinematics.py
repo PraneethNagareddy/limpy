@@ -11,7 +11,7 @@ class IK:
             x, y = y, x
 
         # 1. Hip Angle
-        hip_angle_rad = math.atan2(y, x)
+        hip_angle_rad = math.atan2(x, y)
 
         # 2. Geometry Correction for Scenario Z
         h_total = math.hypot(x, y)
