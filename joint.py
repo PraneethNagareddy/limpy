@@ -78,7 +78,7 @@ class Joint:
 
     def validate_and_reset(self):
         current_angle = self.get_current_angle()
-        if math.isnan(current_angle):
+        if current_angle is None or math.isnan(current_angle):
             logging.info("Servo angle is NaN. Resetting the servo")
             self.reset()
 
