@@ -7,4 +7,4 @@ class ServoKitFactory(object):
             0x40: ServoKit(channels=16, address=0x40),
             0x41: ServoKit(channels=16, address=0x41)
         }
-        return servo_kits.get(i2c_address)()
+        return servo_kits.get(i2c_address)
