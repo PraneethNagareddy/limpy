@@ -1,6 +1,7 @@
 import time
 
 from leg import Leg
+from config import INIT_COORDINATES;
 import logging
 import threading
 
@@ -8,30 +9,37 @@ class Spider:
     def __init__(self, front_right_leg:Leg,
                  front_left_leg:Leg,
                  rear_right_leg:Leg,
-                 rear_left_leg:Leg):
+                 rear_left_leg:Leg,
+                 middle_left_leg:Leg,
+                 middle_right_leg:Leg):
         self.front_right_leg = front_right_leg
         self.front_left_leg = front_left_leg
         self.rear_right_leg = rear_right_leg
         self.rear_left_leg = rear_left_leg
-        self.__legs = (self.front_right_leg, self.rear_right_leg, self.rear_left_leg, self.front_left_leg)
+        self.middle_left_leg = middle_left_leg
+        self.middle_right_leg = middle_right_leg
+        self.legs = (self.front_right_leg, self.middle_right_leg, self.rear_right_leg, self.rear_left_leg, self.middle_left_leg, self.front_left_leg)
         self.__right_legs = (self.front_right_leg, self.rear_right_leg)
         self.__left_legs = (self.front_left_leg, self.rear_left_leg)
 
     def startup(self):
-        front_left_thread = threading.Thread(target=self.front_left_leg.startup())
-        front_right_thread = threading.Thread(target=self.front_right_leg.startup())
-        rear_left_thread = threading.Thread(target=self.rear_left_leg.startup())
-        rear_right_thread = threading.Thread(target=self.rear_right_leg.startup())
+        #front_left_thread = threading.Thread(target=self.front_left_leg.startup())
+        #front_right_thread = threading.Thread(target=self.front_right_leg.startup())
+        #rear_left_thread = threading.Thread(target=self.rear_left_leg.startup())
+        #rear_right_thread = threading.Thread(target=self.rear_right_leg.startup())
 
-        front_left_thread.start()
-        front_right_thread.start()
-        rear_left_thread.start()
-        rear_right_thread.start()
+        #front_left_thread.start()
+        #front_right_thread.start()
+        #rear_left_thread.start()
+        #rear_right_thread.start()
 
-        front_left_thread.join()
-        front_right_thread.join()
-        rear_left_thread.join()
-        rear_right_thread.join()
+        #front_left_thread.join()
+        #front_right_thread.join()
+        #rear_left_thread.join()
+        #rear_right_thread.join()
+        for leg in self.legs:
+            leg.move_to_position(x_target=INIT_COORDINATES[0], y_target=INIT_COORDINATES[1], z_target=INIT_COORDINATES[2])
+
         logging.info("Spider initiated!")
 
     def startup_old(self):
@@ -59,8 +67,8 @@ class Spider:
         logging.info("Spider initiated!")
 
     def shutdown(self):
-        for __leg in self.__legs:
-            __leg.terminate()
+        #for __leg in self.__legs:
+        #    __leg.terminate()
         logging.info("Spider shutdown!")
 
     def hibernate(self):
