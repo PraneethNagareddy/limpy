@@ -12,31 +12,28 @@ if not len(sys.argv) != 3:
 X = int(sys.argv[1])
 Y = int(sys.argv[2])
 Z = int(sys.argv[3])
-
-
-angles = IK.solve(X,Y,Z)
-print("Servo Angles:", angles)
-
-i2c_address = 0x40
+#angles = IK.solve(X,Y,Z)
 leg = middle_left_leg
 
-(hip_angle, knee_angle, ankle_angle) = leg.convert_IK_to_servo_angles(angles[0], angles[1], angles[2])
+leg.move_to_position(X, Y, Z)
 
-print("Hip Angle:", hip_angle)
-print("Knee Angle:", knee_angle)
-print("Ankle Angle:", ankle_angle)
+#(hip_angle, knee_angle, ankle_angle) = leg.convert_IK_to_servo_angles(angles[0], angles[1], angles[2])
 
-hip_joint_channel = leg.hip_joint.joint_config.channel
-knee_joint_channel = leg.knee_joint.joint_config.channel
-ankle_joint_channel = leg.ankle_joint.joint_config.channel
+#print("Hip Angle:", hip_angle)
+#print("Knee Angle:", knee_angle)
+#print("Ankle Angle:", ankle_angle)
 
-kit = ServoKit(channels = 16, address=0x40)
-kit.servo[hip_joint_channel].set_pulse_width_range(450, 2650)
-kit.servo[knee_joint_channel].set_pulse_width_range(450, 2650)
-kit.servo[ankle_joint_channel].set_pulse_width_range(450, 2650)
+#hip_joint_channel = leg.hip_joint.joint_config.channel
+#knee_joint_channel = leg.knee_joint.joint_config.channel
+#ankle_joint_channel = leg.ankle_joint.joint_config.channel
 
-kit.servo[hip_joint_channel].angle = hip_angle
-time.sleep(0.5)
-kit.servo[knee_joint_channel].angle = knee_angle
-time.sleep(0.5)
-kit.servo[ankle_joint_channel].angle = ankle_angle
+#kit = ServoKit(channels = 16, address=0x40)
+#kit.servo[hip_joint_channel].set_pulse_width_range(450, 2650)
+#kit.servo[knee_joint_channel].set_pulse_width_range(450, 2650)
+#kit.servo[ankle_joint_channel].set_pulse_width_range(450, 2650)
+
+#kit.servo[hip_joint_channel].angle = hip_angle
+#time.sleep(0.5)
+#kit.servo[knee_joint_channel].angle = knee_angle
+#time.sleep(0.5)
+#kit.servo[ankle_joint_channel].angle = ankle_angle
