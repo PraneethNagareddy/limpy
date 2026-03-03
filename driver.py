@@ -11,10 +11,10 @@ from leg import Leg
 from enums import Legs
 
 
-logging.basicConfig(
-    level=logging.ERROR,  # Set the minimum level to log (INFO, DEBUG, etc.)
-    format='%(asctime)s - %(levelname)s - %(message)s',
-)
+#logging.basicConfig(
+#    level=logging.ERROR,  # Set the minimum level to log (INFO, DEBUG, etc.)
+#    format='%(asctime)s - %(levelname)s - %(message)s',
+#)
 
 front_left_hip_config = JointConfig("TowerPro MG90S", "Positional", "Front Left Hip", channel=2, i2c_address=0x41)
 front_left_knee_config = JointConfig("TowerPro MG90S", "Positional", "Front Left knee", channel=7, i2c_address=0x41)
