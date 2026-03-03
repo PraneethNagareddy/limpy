@@ -25,7 +25,8 @@ class Leg:
         pass
 
     def move_to_position(self, x_target, y_target, z_target, with_ease:bool = True):
-        (hip_angle, knee_angle, ankle_angle) = self.__convert_IK_to_servo_angles(IK.solve(x_target, y_target, z_target))
+        (ik_hip, ik_knee, ik_ankle) = IK.solve(x_target, y_target, z_target)
+        (hip_angle, knee_angle, ankle_angle) = self.__convert_IK_to_servo_angles(ik_hip, ik_knee, ik_ankle)
         self.hip_joint.validate_and_reset()
         self.knee_joint.validate_and_reset()
         self.ankle_joint.validate_and_reset()
