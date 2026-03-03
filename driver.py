@@ -12,7 +12,7 @@ from enums import Legs
 
 
 logging.basicConfig(
-    level=logging.INFO,  # Set the minimum level to log (INFO, DEBUG, etc.)
+    level=logging.ERROR,  # Set the minimum level to log (INFO, DEBUG, etc.)
     format='%(asctime)s - %(levelname)s - %(message)s',
 )
 
