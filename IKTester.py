@@ -1,5 +1,6 @@
 from inverse_kinematics import IK
 from adafruit_servokit import ServoKit
+from driver import *
 
 import time
 import sys
@@ -16,13 +17,20 @@ Z = int(sys.argv[3])
 angles = IK.solve(X,Y,Z)
 print("Servo Angles:", angles)
 
-kit = ServoKit(channels = 16, address=0x40)
-kit.servo[14].set_pulse_width_range(450, 2650)
-kit.servo[12].set_pulse_width_range(450, 2650)
-kit.servo[0].set_pulse_width_range(450, 2650)
+i2c_address = 0x40
+leg = middle_left_leg
 
-kit.servo[14].angle = angles[0]
+hip_joint_channel = leg.hip_joint.joint_config.channel
+knee_joint_channel = leg.knee_joint.joint_config.channel
+ankle_joint_channel = leg.ankle_joint.joint_config.channel
+
+kit = ServoKit(channels = 16, address=0x40)
+kit.servo[hip_joint_channel].set_pulse_width_range(450, 2650)
+kit.servo[knee_joint_channel].set_pulse_width_range(450, 2650)
+kit.servo[ankle_joint_channel].set_pulse_width_range(450, 2650)
+
+kit.servo[hip_joint_channel].angle = angles[0]
 time.sleep(0.5)
-kit.servo[12].angle = angles[1]
+kit.servo[knee_joint_channel].angle = angles[1]
 time.sleep(0.5)
-kit.servo[0].angle = angles[2]
+kit.servo[ankle_joint_channel].angle = angles[2]
