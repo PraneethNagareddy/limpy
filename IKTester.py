@@ -13,7 +13,7 @@ X = int(sys.argv[1])
 Y = int(sys.argv[2])
 Z = int(sys.argv[3])
 #angles = IK.solve(X,Y,Z)
-leg = middle_left_leg
+leg = front_right_leg
 
 leg.move_to_position(X, Y, Z)
 
