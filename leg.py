@@ -26,7 +26,7 @@ class Leg:
 
     def move_to_position(self, x_target, y_target, z_target, with_ease:bool = True):
         (ik_hip, ik_knee, ik_ankle) = IK.solve(x_target, y_target, z_target)
-        (hip_angle, knee_angle, ankle_angle) = self.__convert_IK_to_servo_angles(ik_hip, ik_knee, ik_ankle)
+        (hip_angle, knee_angle, ankle_angle) = self.convert_IK_to_servo_angles(ik_hip, ik_knee, ik_ankle)
         self.hip_joint.validate_and_reset()
         self.knee_joint.validate_and_reset()
         self.ankle_joint.validate_and_reset()
@@ -163,7 +163,7 @@ class Leg:
         logging.debug("Turning knee to: %s", target_knee_angle)
         self.knee_joint.turn(target_knee_angle)
 
-    def __convert_IK_to_servo_angles(self, ik_hip, ik_knee, ik_ankle):
+    def convert_IK_to_servo_angles(self, ik_hip, ik_knee, ik_ankle):
         # 1. Hip: Center is 90 at mount_angle
         # ik_hip increases -> servo moves further away from 0.
         s_hip = 90 + (ik_hip - self.config.mount_angle)

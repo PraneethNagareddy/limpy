@@ -20,6 +20,8 @@ print("Servo Angles:", angles)
 i2c_address = 0x40
 leg = middle_left_leg
 
+(hip_angle, knee_angle, ankle_angle) = leg.convert_IK_to_servo_angles(angles[0], angles[1], angles[2])
+
 hip_joint_channel = leg.hip_joint.joint_config.channel
 knee_joint_channel = leg.knee_joint.joint_config.channel
 ankle_joint_channel = leg.ankle_joint.joint_config.channel
