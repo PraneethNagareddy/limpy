@@ -31,8 +31,8 @@ kit.servo[hip_joint_channel].set_pulse_width_range(450, 2650)
 kit.servo[knee_joint_channel].set_pulse_width_range(450, 2650)
 kit.servo[ankle_joint_channel].set_pulse_width_range(450, 2650)
 
-kit.servo[hip_joint_channel].angle = angles[0]
+kit.servo[hip_joint_channel].angle = hip_angle
 time.sleep(0.5)
-kit.servo[knee_joint_channel].angle = angles[1]
+kit.servo[knee_joint_channel].angle = knee_angle
 time.sleep(0.5)
-kit.servo[ankle_joint_channel].angle = angles[2]
+kit.servo[ankle_joint_channel].angle = ankle_angle
