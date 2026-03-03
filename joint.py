@@ -1,5 +1,4 @@
 import math
-from cmath import isnan
 
 from servo_kit_factory import ServoKitFactory
 from joint_config import JointConfig
@@ -63,7 +62,7 @@ class Joint:
 
     def reset(self, await_completion=False, wait_time=None):
         logging.info("Resetting joint: %s", self.joint_config.common_name)
-        current_angle = 180 if math.isnan(self.get_current_angle()) else self.get_current_angle()
+        current_angle = 180 if self.get_current_angle() is None else self.get_current_angle()
         angle_delta = abs(current_angle - self.joint_config.default_angle)
         self.KIT.servo[self.joint_config.channel].angle = self.joint_config.default_angle
         if await_completion:
