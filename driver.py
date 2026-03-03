@@ -80,6 +80,6 @@ spider:Spider = Spider(front_right_leg=front_right_leg,
                  middle_left_leg=middle_left_leg,
                  middle_right_leg=middle_right_leg)
 
-spider.startup()
-time.sleep(20)
-spider.shutdown()
+#spider.startup()
+#time.sleep(20)
+#spider.shutdown()
