@@ -1,6 +1,7 @@
 from inverse_kinematics import IK
 from adafruit_servokit import ServoKit
 from driver import *
+from config import *
 
 import time
 import sys
@@ -9,9 +10,11 @@ import sys
 if not len(sys.argv) != 3:
         print("invalid usage. Provide exactly three arguments, i.e X,Y,Z co-ordinates")
 
-X = int(sys.argv[1])
-Y = int(sys.argv[2])
-Z = int(sys.argv[3])
+#X = int(sys.argv[1])
+#Y = int(sys.argv[2])
+#Z = int(sys.argv[3])
+
+(X,Y,Z) = INIT_COORDINATES
 #angles = IK.solve(X,Y,Z)
 leg = front_right_leg
 
