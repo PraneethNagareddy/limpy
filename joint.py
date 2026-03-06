@@ -72,7 +72,7 @@ class Joint:
                 sleep(wait_time)
 
     def get_current_angle(self) -> float:
-        logging.info("Angle value of joint: %s is %f", self.joint_config.common_name, self.KIT.servo[self.joint_config.channel].angle)
+        #logging.info("Angle value of joint: %s is %f", self.joint_config.common_name, self.KIT.servo[self.joint_config.channel].angle)
         return self.KIT.servo[self.joint_config.channel].angle
 
     def validate_and_reset(self):
