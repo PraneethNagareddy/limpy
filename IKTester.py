@@ -16,9 +16,10 @@ if not len(sys.argv) != 3:
 
 (X,Y,Z) = INIT_COORDINATES
 #angles = IK.solve(X,Y,Z)
-leg = front_right_leg
+legs = (front_left_leg, front_right_leg, middle_left_leg, middle_right_leg, rear_left_leg, rear_right_leg)
 
-leg.move_to_position(X, Y, Z)
+for leg in legs:
+    leg.move_to_position(X, Y, Z)
 
 #(hip_angle, knee_angle, ankle_angle) = leg.convert_IK_to_servo_angles(angles[0], angles[1], angles[2])
 

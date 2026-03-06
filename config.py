@@ -57,6 +57,6 @@ NEUTRAL_Y = 70     # Your verified side-offset
 NEUTRAL_Z = 130    # Your verified standing height
 GAIT_SPEED = 1.5   # Adjust for MG995 speed limits
 
-INIT_COORDINATES = (30, 70, 130)
+INIT_COORDINATES = (60, 60, 130)
 
 TRIPOD_GATE_A_GROUP = [1, 3, 4] #FrontRight, BackRight, MiddleLeft
