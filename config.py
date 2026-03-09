@@ -55,7 +55,7 @@ STEP_HEIGHT = 40   # How high to lift the leg (mm)
 STEP_LENGTH = 50   # How far to step forward (mm)
 NEUTRAL_Y = 70     # Your verified side-offset
 NEUTRAL_Z = 130    # Your verified standing height
-GAIT_SPEED = 5   # Adjust for MG995 speed limits
+GAIT_SPEED = 50   # Adjust for MG995 speed limits
 
 INIT_COORDINATES = (60, 60, 130)
 
