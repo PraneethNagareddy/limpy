@@ -27,7 +27,7 @@ class TripodGait(WalkingGait):
     def __init__(self, spider: Spider):
         super().__init__(spider)
 
-    def walk_forward(self, stride_distance_cm=3):
+    def walk_forward(self, stride_distance_cm=5):
         # Code to move three legs off ground at once
         logging.info("Walking forward")
         tripod_a = [1, 3, 4]
