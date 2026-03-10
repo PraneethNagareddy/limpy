@@ -59,4 +59,4 @@ GAIT_SPEED = 0.25   # Adjust for MG995 speed limits
 
 INIT_COORDINATES = (60, 60, 130)
 
-TRIPOD_GATE_A_GROUP = [1, 3, 4] #FrontRight, BackRight, MiddleLeft
+TRIPOD_GATE_A_GROUP = [1, 3, 5] #FrontRight, BackRight, MiddleLeft
