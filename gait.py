@@ -41,7 +41,7 @@ class TripodGait(WalkingGait):
             phase = t % 1.0
 
             for leg in self.spider.legs:
-                if leg.config.position is not Legs.FRONT_RIGHT:
+                if leg.config.position is not Legs.FRONT_RIGHT or leg.config.position is not Legs.FRONT_LEFT:
                     continue
                 # Assign leg to Group A or B
                 # (Using a simple 0-5 ID mapping for this example)
