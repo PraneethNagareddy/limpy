@@ -1,6 +1,7 @@
 from spider import Spider
 from config import *
 from inverse_kinematics import IK
+from enums import Legs
 
 import time
 import math
@@ -40,6 +41,8 @@ class TripodGait(WalkingGait):
             phase = t % 1.0
 
             for leg in self.spider.legs:
+                if leg.position is not Legs.FRONT_RIGHT:
+                    continue
                 # Assign leg to Group A or B
                 # (Using a simple 0-5 ID mapping for this example)
                 leg_id = leg.config.position.value
