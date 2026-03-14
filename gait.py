@@ -73,4 +73,4 @@ class TripodGait(WalkingGait):
                     target_z = NEUTRAL_Z  # Stay flat on the floor
 
                 leg.move_to_position(target_x, NEUTRAL_Y, target_z)
-            time.sleep(0.02)  # 50Hz update rate
+            time.sleep(0.002)  # 50Hz update rate
