@@ -186,4 +186,4 @@ class Leg:
         # When ik_ankle increases (leg straightens), servo moves toward 180.
         s_ankle = ik_ankle
 
-        return s_hip, s_knee, s_ankle
+        return round(s_hip, 1) , round(s_knee, 1), round(s_ankle, 1)
