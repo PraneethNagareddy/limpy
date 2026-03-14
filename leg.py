@@ -37,9 +37,9 @@ class Leg:
         if with_ease:
             turn_joints_ease([(self.hip_joint, self.hip_joint.get_current_angle(), hip_angle), (self.hip_joint, self.hip_joint.get_current_angle(), hip_angle), (self.hip_joint, self.hip_joint.get_current_angle(), hip_angle)], duration_sec=0.5)
         else:
-            self.hip_joint.turn(hip_angle, await_completion=True, wait_time=0.02)
-            self.knee_joint.turn(knee_angle, await_completion=True, wait_time=0.02)
-            self.ankle_joint.turn(ankle_angle, await_completion=True, wait_time=0.02)
+            self.hip_joint.turn(hip_angle, await_completion=False, wait_time=0.02)
+            self.knee_joint.turn(knee_angle, await_completion=False, wait_time=0.02)
+            self.ankle_joint.turn(ankle_angle, await_completion=False, wait_time=0.02)
 
     def move_to_stable_position(self):
         self.hip_joint.turn(to_angle=HIP_JOINT_STEP_ANGLE_FRONT, await_completion=False)
