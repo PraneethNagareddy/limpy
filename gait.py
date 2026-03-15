@@ -41,18 +41,22 @@ class TripodGait(WalkingGait):
             phase = t % 1.0
 
             for leg in self.spider.legs:
+
+                # Assign leg to Group A or B
+                # (Using a simple 0-5 ID mapping for this example)
                 leg_id = leg.config.position.value
-                is_group_a = leg_id in TRIPOD_GATE_A_GROUP
+                is_group_a = leg_id in TRIPOD_GATE_A_GROUP  # FR, BR, ML
+
+                if not is_group_a: #leg.config.position != Legs.FRONT_RIGHT:
+                    continue
 
                 # Offset the timing of Group B by half a cycle
                 leg_phase = phase if is_group_a else (phase + 0.5) % 1.0
 
-                if leg_id is not Legs.FRONT_RIGHT:
-                    continue
-
-                # 1. SWING PHASE (Leg in air moving forward)
+                # 1. SWING PHASE (Leg is in the air moving forward)
                 if leg_phase < 0.5:
-                    s_phase = leg_phase * 2  # 0.0 to 1.0
+                    # Map 0.0-0.5 to a 0.0-1.0 sub-phase
+                    s_phase = leg_phase * 2
 
                     # SMOOTH X: Uses Cosine to accelerate/decelerate
                     # Moves from -half to +half length
@@ -61,9 +65,10 @@ class TripodGait(WalkingGait):
                     # Z LIFT: Parabolic/Sinusoidal
                     target_z = NEUTRAL_Z - (math.sin(s_phase * math.pi) * STEP_HEIGHT)
 
-                # 2. STANCE PHASE (Leg on ground pushing body)
+                # 2. STANCE PHASE (Leg is on ground pushing body)
                 else:
-                    s_phase = (leg_phase - 0.5) * 2  # 0.0 to 1.0
+                    # Map 0.5-1.0 to a 0.0-1.0 sub-phase
+                    s_phase = (leg_phase - 0.5) * 2
 
                     # SMOOTH X: Reverse Cosine to push the body forward
                     target_x = math.cos(s_phase * math.pi) * (STEP_LENGTH / 2)
@@ -72,6 +77,4 @@ class TripodGait(WalkingGait):
 
                 # Move the leg
                 leg.move_to_position(target_x, NEUTRAL_Y, target_z)
-
-
             time.sleep(0.02)  # 50Hz update rate
