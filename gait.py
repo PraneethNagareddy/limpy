@@ -47,7 +47,7 @@ class TripodGait(WalkingGait):
                 leg_id = leg.config.position.value
                 is_group_a = leg_id in TRIPOD_GATE_A_GROUP  # FR, BR, ML
 
-                if not is_group_a: #leg.config.position != Legs.FRONT_RIGHT:
+                if leg.config.position != Legs.FRONT_RIGHT: #not is_group_a:
                     continue
 
                 # Offset the timing of Group B by half a cycle
@@ -73,4 +73,4 @@ class TripodGait(WalkingGait):
                     target_z = NEUTRAL_Z  # Stay flat on the floor
 
                 leg.move_to_position(target_x, NEUTRAL_Y, target_z)
-            time.sleep(0.002)  # 50Hz update rate
+            time.sleep(0.02)  # 50Hz update rate
