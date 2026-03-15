@@ -53,7 +53,8 @@ STANCE_HEIGHT_MM = 40
 
 STEP_HEIGHT = 40   # How high to lift the leg (mm)
 STEP_LENGTH = 70   # How far to step forward (mm)
-NEUTRAL_Y = 70     # Your verified side-offset
+
+NEUTRAL_Y = 60     # Your verified side-offset
 NEUTRAL_Z = 130    # Your verified standing height
 GAIT_SPEED = 0.25   # Adjust for MG995 speed limits
 

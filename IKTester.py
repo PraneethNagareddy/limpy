@@ -19,7 +19,7 @@ if not len(sys.argv) != 3:
 legs = (front_left_leg, front_right_leg, middle_left_leg, middle_right_leg, rear_left_leg, rear_right_leg)
 
 for leg in legs:
-    leg.move_to_position(X, Y, Z)
+    leg.move_to_position(X, Y, Z, with_ease=True)
 
 #(hip_angle, knee_angle, ankle_angle) = leg.convert_IK_to_servo_angles(angles[0], angles[1], angles[2])
 

@@ -31,7 +31,6 @@ class TripodGait(WalkingGait):
     def walk_forward(self, stride_distance_cm=5):
         # Code to move three legs off ground at once
         logging.info("Walking forward")
-        tripod_a = [1, 3, 4]
         start_time = time.time()
 
         while True:
