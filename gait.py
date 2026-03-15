@@ -36,7 +36,7 @@ class TripodGait(WalkingGait):
         # Code to move three legs off ground at once
         logging.info("Walking forward")
         start_time = time.time()
-        self.__init_walk_stance()
+        #self.__init_walk_stance()
         while True:
             t = (time.time() - start_time) * GAIT_SPEED
 
@@ -50,7 +50,7 @@ class TripodGait(WalkingGait):
                 leg_id = leg.config.position.value
                 is_group_a = leg_id in TRIPOD_GATE_A_GROUP  # FR, BR, ML
 
-                if is_group_a: #leg.config.position != Legs.FRONT_RIGHT:
+                if not is_group_a: #leg.config.position != Legs.FRONT_RIGHT:
                     continue
 
                 # Offset the timing of Group B by half a cycle
