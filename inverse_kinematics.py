@@ -37,9 +37,9 @@ class IK:
         knee_angle_part2 = math.atan2(z_eff, h_eff)
 
         knee_angle_rad = knee_angle_part1 + knee_angle_part2
-        logging.info("IK Hip: %f", math.degrees(hip_angle_rad))
-        logging.info("IK Knee: %f", math.degrees(knee_angle_rad))
-        logging.info("IK Ankle: %f", math.degrees(ankle_angle_rad))
+        logging.debug("IK Hip: %f", math.degrees(hip_angle_rad))
+        logging.debug("IK Knee: %f", math.degrees(knee_angle_rad))
+        logging.debug("IK Ankle: %f", math.degrees(ankle_angle_rad))
 
         return (
             math.degrees(hip_angle_rad),
