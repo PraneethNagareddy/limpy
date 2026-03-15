@@ -18,10 +18,10 @@ class Joint:
         if (to_angle > self.joint_config.max_angle or
                 to_angle < self.joint_config.min_angle):
             logging.error("Angle for joint: %s out of range", self.joint_config.common_name)
-        angle_delta = abs(self.get_current_angle() - to_angle)
         self.KIT.servo[self.joint_config.channel].angle = to_angle
         if await_completion:
             if wait_time is None:
+                angle_delta = abs(self.get_current_angle() - to_angle)
                 sleep(self.__get_servo_sleep_time_seconds(angle_delta))
             else:
                 sleep(wait_time)
