@@ -38,7 +38,7 @@ class TripodGait(WalkingGait):
         # Code to move three legs off ground at once
         logging.info("Walking forward")
         start_time = time.time()
-        self.__init_walk_stance()
+        #self.__init_walk_stance()
         while True:
             t = (time.time() - start_time) * GAIT_SPEED
 
@@ -48,7 +48,7 @@ class TripodGait(WalkingGait):
             for leg in self.spider.legs:
 
                 # Assign leg to Group A or B
-                # (Using a simple 0-5 ID mapping for this example)
+                # (Using a simple 1-6 ID mapping for this example)
                 leg_id = leg.config.position.value
                 is_group_a = leg_id in TRIPOD_GATE_A_GROUP  # FR, BR, ML
 
