@@ -46,8 +46,8 @@ class TripodGait(WalkingGait):
                 leg_id = leg.config.position.value
                 is_group_a = leg_id in TRIPOD_GATE_A_GROUP  # FR, BR, ML
 
-                # if not is_group_a: #leg.config.position != Legs.FRONT_RIGHT:
-                #     continue
+                if not is_group_a: #leg.config.position != Legs.FRONT_RIGHT:
+                    continue
 
                 # Offset the timing of Group B by half a cycle
                 leg_phase = phase if is_group_a else (phase + 0.5) % 1.0
