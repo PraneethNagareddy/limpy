@@ -30,9 +30,9 @@ class TripodGait(WalkingGait):
 
     def __init_walk_stance(self):
         for leg in self.spider.legs:
-            leg.hip_joint.turn_smooth(149)
-            leg.knee_joint.turn_smooth(33.5)
-            leg.knee_joint.turn_smooth(82)
+            leg.hip_joint.turn(149)
+            leg.knee_joint.turn(33.5)
+            leg.knee_joint.turn(82)
 
     def walk_forward(self, stride_distance_cm=5):
         # Code to move three legs off ground at once
