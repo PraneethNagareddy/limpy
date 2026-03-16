@@ -16,7 +16,7 @@ class IK:
         # 2. Geometry Correction for Scenario Z
         h_total = math.hypot(x, y)
         h_eff = h_total - COXA_LENGTH_MM
-        z_eff = z - COXA_Z_OFFSET_MM  # This accounts for the 'step' in the coxa
+        z_eff = z #- COXA_Z_OFFSET_MM  # This accounts for the 'step' in the coxa
 
         # 3. New 'L' based on corrected coordinates
         l = math.hypot(h_eff, z_eff)
