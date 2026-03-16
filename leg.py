@@ -179,7 +179,7 @@ class Leg:
         # 2. Knee: Direct Mapping
         # 0 = Up, 90 = Horizontal, 180 = Down.
         # ik_knee follows this naturally.
-        s_knee = 180 - ik_knee
+        s_knee = ik_knee
 
         # 3. Ankle: Direct Mapping
         # 0 = Inward, 90 = Vertical, 180 = Outward.
