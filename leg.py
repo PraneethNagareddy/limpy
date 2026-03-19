@@ -29,12 +29,13 @@ class Leg:
         logging.info("Moving %s to (%f, %f, %f)", self.config.position.name, x_target, y_target, z_target)
         # 1. Rotate Robot-Coordinates into Leg-Coordinates
         # This aligns 'Robot X' with the 'Leg's Swing Plane'
-        angle_rad = math.radians(self.config.mount_angle)
+        angle_rad = math.radians(-self.config.mount_angle)  # Note the negative sign
 
-        # Standard 2D Rotation Matrix
-        x_leg = x_target * math.cos(angle_rad) + y_target * math.sin(angle_rad)
-        y_leg = -x_target * math.sin(angle_rad) + y_target * math.cos(angle_rad)
+        x_leg = x_target * math.cos(angle_rad) - y_target * math.sin(angle_rad)
+        y_leg = x_target * math.sin(angle_rad) + y_target * math.cos(angle_rad)
 
+        # Now x_leg is exactly the 'Reach' out from the Hip
+        # and y_leg is exactly the 'Swing' left/right from the Hip
         (ik_hip, ik_knee, ik_ankle) = IK.solve(x_leg, y_leg, z_target)
         (hip_angle, knee_angle, ankle_angle) = self.convert_ik_to_servo_angles(ik_hip, ik_knee, ik_ankle)
         logging.debug("hip angle: %f", hip_angle)
