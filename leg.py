@@ -169,9 +169,9 @@ class Leg:
         self.knee_joint.turn(target_knee_angle)
 
     def convert_ik_to_servo_angles(self, ik_hip, ik_knee, ik_ankle):
-        # If ik_hip is 0, the leg is pointing straight out from its mount.
-        # We add 90 to put the servo at its center point.
-        s_hip = 90 + ik_hip
+        # Logic: ServoAngle = Center + (DesiredAngle - MountAngle)
+        # If ik_hip is 0 and mount_angle is 45, s_hip becomes 90 + (0 - 45) = 45.
+        s_hip = 90 + (ik_hip - self.config.mount_angle)
 
         # If the leg is on the left side, you might need to inverse the hip
         # so that positive IK angles move the leg 'forward' on both sides.
