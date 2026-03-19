@@ -185,6 +185,6 @@ class Leg:
         # 0 = Inward, 90 = Vertical, 180 = Outward.
         # When ik_ankle is 90 (right angle), the tibia is vertical.
         # When ik_ankle increases (leg straightens), servo moves toward 180.
-        s_ankle = 180-ik_ankle
+        s_ankle = ik_ankle
 
         return round(s_hip, 1) , round(s_knee, 1), round(s_ankle, 1)
