@@ -17,9 +17,14 @@ class IK:
         h_total = math.hypot(x, y)
         l_reach = h_total - COXA_LENGTH_MM
 
+        # 3. THE CRITICAL FIX: Account for the 10mm vertical step
+        # We subtract 10mm from Z because the Femur pivot is 10mm HIGHER
+        # than the Hip pivot.
+        adjusted_z = z - COXA_Z_OFFSET_MM
+
         # 3. 3D "Leg Plane" Distance (D):
         # The hypotenuse from the Femur-joint to the Foot.
-        d = math.hypot(l_reach, z)
+        d = math.hypot(l_reach, adjusted_z)
 
         # Safety Check: Don't exceed physical limit
         max_reach = FEMUR_LENGTH_MM + TIBIA_LENGTH_MM
