@@ -6,43 +6,47 @@ from config import FEMUR_LENGTH_MM, TIBIA_LENGTH_MM, COXA_LENGTH_MM, COXA_Z_OFFS
 
 class IK:
     @staticmethod
-    def solve(x, y, z, right_handed=True) -> Tuple[float, float, float]:
-        if not right_handed:
-            x, y = y, x
-
-        # 1. Hip Angle
+    def solve(x, y, z) -> Tuple[float, float, float]:
+        # 1. Hip Angle: Simple rotation around the vertical axis
         hip_angle_rad = math.atan2(y, x)
+        hip_deg = math.degrees(hip_angle_rad)
 
-        # 2. Geometry Correction for Scenario Z
+        # 2. Horizontal Reach (L): Distance from Coxa pivot to foot,
+        # MINUS the coxa's own length.
+        # This leaves us with the reach the Femur and Tibia must cover.
         h_total = math.hypot(x, y)
-        h_eff = h_total - COXA_LENGTH_MM
-        z_eff = z #- COXA_Z_OFFSET_MM  # This accounts for the 'step' in the coxa
+        l_reach = h_total - COXA_LENGTH_MM
 
-        # 3. New 'L' based on corrected coordinates
-        l = math.hypot(h_eff, z_eff)
+        # 3. 3D "Leg Plane" Distance (D):
+        # The hypotenuse from the Femur-joint to the Foot.
+        d = math.hypot(l_reach, z)
 
-        # Reachability Check
+        # Safety Check: Don't exceed physical limit
         max_reach = FEMUR_LENGTH_MM + TIBIA_LENGTH_MM
-        l = min(l, max_reach)
+        d = min(d, max_reach)
 
-        # 4. Law of Cosines (Ankle/Tibia)
-        cos_ankle = (FEMUR_LENGTH_MM ** 2 + TIBIA_LENGTH_MM ** 2 - l ** 2) / (2 * FEMUR_LENGTH_MM * TIBIA_LENGTH_MM)
-        ankle_angle_rad = math.acos(max(-1, min(1, cos_ankle)))
+        # 4. Law of Cosines for Tibia (Ankle)
+        # Returns the internal angle between Femur and Tibia.
+        # 180 = straight, 90 = L-shape.
+        cos_tibia = (FEMUR_LENGTH_MM ** 2 + TIBIA_LENGTH_MM ** 2 - d ** 2) / (2 * FEMUR_LENGTH_MM * TIBIA_LENGTH_MM)
+        tibia_internal_deg = math.degrees(math.acos(max(-1, min(1, cos_tibia))))
 
-        # 5. Knee/Femur Angle
-        knee_a = (l ** 2 + FEMUR_LENGTH_MM ** 2 - TIBIA_LENGTH_MM ** 2) / (2 * l * FEMUR_LENGTH_MM)
-        knee_angle_part1 = math.acos(max(-1, min(1, knee_a)))
+        # 5. Law of Cosines for Femur (Knee)
+        # alpha: angle between Femur and the line 'd'
+        cos_femur = (FEMUR_LENGTH_MM ** 2 + d ** 2 - TIBIA_LENGTH_MM ** 2) / (2 * FEMUR_LENGTH_MM * d)
+        alpha = math.degrees(math.acos(max(-1, min(1, cos_femur))))
 
-        # Use the corrected z_eff and h_eff here!
-        knee_angle_part2 = math.atan2(z_eff, h_eff)
+        # beta: angle of the line 'd' relative to the horizontal plane
+        # If z is negative (foot below hip), beta will be negative.
+        beta = math.degrees(math.atan2(z, l_reach))
 
-        knee_angle_rad =  knee_angle_part2 - knee_angle_part1
-        logging.debug("IK Hip: %f", math.degrees(hip_angle_rad))
-        logging.debug("IK Knee: %f", math.degrees(knee_angle_rad))
-        logging.debug("IK Ankle: %f", math.degrees(ankle_angle_rad))
+        # 6. Apply your physical offsets (90/90/90 = L-shape)
+        # Knee: If alpha + beta = 0, femur is horizontal (90 deg servo)
+        # We subtract the angle from 90 to tilt the femur down for negative Z.
+        final_knee = 90 - (alpha + beta)
 
-        return (
-            math.degrees(hip_angle_rad),
-            math.degrees(knee_angle_rad),
-            math.degrees(ankle_angle_rad)
-        )
+        # Ankle: The internal angle is 90 for L-shape, 180 for straight.
+        # Your servo is 90 for L-shape, 180 for straight. Direct map!
+        final_ankle = tibia_internal_deg
+
+        return hip_deg, final_knee, final_ankle
