@@ -5,6 +5,7 @@ from enums import Legs
 from joint import Joint
 from inverse_kinematics import IK
 import logging
+import math
 
 class Leg:
     def __init__(self, hip_joint: Joint, knee_joint:Joint, ankle_joint:Joint, config:LegConfig):
@@ -26,7 +27,15 @@ class Leg:
 
     def move_to_position(self, x_target, y_target, z_target, with_ease:bool = False):
         logging.info("Moving %s to (%f, %f, %f)", self.config.position.name, x_target, y_target, z_target)
-        (ik_hip, ik_knee, ik_ankle) = IK.solve(x_target, y_target, z_target)
+        # 1. Rotate Robot-Coordinates into Leg-Coordinates
+        # This aligns 'Robot X' with the 'Leg's Swing Plane'
+        angle_rad = math.radians(self.config.mount_angle)
+
+        # Standard 2D Rotation Matrix
+        x_leg = x_target * math.cos(angle_rad) + y_target * math.sin(angle_rad)
+        y_leg = -x_target * math.sin(angle_rad) + y_target * math.cos(angle_rad)
+
+        (ik_hip, ik_knee, ik_ankle) = IK.solve(x_leg, y_leg, z_target)
         (hip_angle, knee_angle, ankle_angle) = self.convert_ik_to_servo_angles(ik_hip, ik_knee, ik_ankle)
         logging.debug("hip angle: %f", hip_angle)
         logging.debug("knee angle: %f", knee_angle)
