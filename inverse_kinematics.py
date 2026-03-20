@@ -1,7 +1,7 @@
 import logging
 import math
 from typing import Tuple
-from config import FEMUR_LENGTH_MM, TIBIA_LENGTH_MM, COXA_LENGTH_MM, COXA_Z_OFFSET_MM
+from config import FEMUR_LENGTH_MM, TIBIA_LENGTH_MM, COXA_LENGTH_MM, COXA_Z_OFFSET_MM, FEMUR_Z_OFFSET_MM
 
 
 class IK:
@@ -20,8 +20,8 @@ class IK:
         # 3. THE CRITICAL FIX: Account for the 10mm vertical step
         # We subtract 10mm from Z because the Femur pivot is 10mm HIGHER
         # than the Hip pivot.
-        total_z_offset = COXA_Z_OFFSET_MM + FEMUR_LENGTH_MM
-        adjusted_z = z - COXA_Z_OFFSET_MM
+        total_z_offset = COXA_Z_OFFSET_MM + FEMUR_Z_OFFSET_MM
+        adjusted_z = z - total_z_offset
 
         # 3. 3D "Leg Plane" Distance (D):
         # The hypotenuse from the Femur-joint to the Foot.
