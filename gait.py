@@ -37,7 +37,7 @@ class TripodGait(WalkingGait):
         # Code to move three legs off ground at once
         logging.info("Walking forward")
         start_time = time.time()
-        self.__init_walk_stance()
+        #self.__init_walk_stance()
         while True:
             t = (time.time() - start_time) * GAIT_SPEED
 
