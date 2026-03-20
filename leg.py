@@ -184,11 +184,13 @@ class Leg:
 
         # Standard center is 90.
         # If the math says move 0 degrees, the servo stays at 90.
-        s_hip = 90 + ik_hip
+        s_hip = 90 + ik_hip + self.config.hip_trim_angle
+        s_knee = ik_knee + self.config.knee_trim_angle
+        s_ankle = ik_ankle + self.config.ankle_trim_angle
 
         # If the leg is on the left side, you might need to inverse the hip
         # so that positive IK angles move the leg 'forward' on both sides.
         if self.config.inverse_hip:
             s_hip = 180 - s_hip
 
-        return round(s_hip, 1), round(ik_knee, 1), round(ik_ankle, 1)
+        return round(s_hip, 1), round(s_knee, 1), round(s_ankle, 1)
