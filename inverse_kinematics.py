@@ -21,7 +21,7 @@ class IK:
         # We subtract 10mm from Z because the Femur pivot is 10mm HIGHER
         # than the Hip pivot.
         total_z_offset = COXA_Z_OFFSET_MM + FEMUR_Z_OFFSET_MM
-        adjusted_z = z - COXA_Z_OFFSET_MM
+        adjusted_z = z - total_z_offset
 
         # 3. 3D "Leg Plane" Distance (D):
         # The hypotenuse from the Femur-joint to the Foot.
