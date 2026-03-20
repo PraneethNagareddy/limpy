@@ -44,7 +44,7 @@ class IK:
 
         # beta: angle of the line 'd' relative to the horizontal plane
         # If z is negative (foot below hip), beta will be negative.
-        beta = math.degrees(math.atan2(z, l_reach))
+        beta = math.degrees(math.atan2(adjusted_z, l_reach))
 
         # 6. Apply your physical offsets (90/90/90 = L-shape)
         # Knee: If alpha + beta = 0, femur is horizontal (90 deg servo)
