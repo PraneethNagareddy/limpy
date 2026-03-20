@@ -64,7 +64,7 @@ class TripodGait(WalkingGait):
 
                     # SMOOTH X: Uses Cosine to accelerate/decelerate
                     # Moves from -half to +half length
-                    target_x = -math.cos(s_phase * math.pi) * (STEP_LENGTH / 2)
+                    target_x = NEUTRAL_X-math.cos(s_phase * math.pi) * (STEP_LENGTH / 2)
 
                     # Z LIFT: Parabolic/Sinusoidal
                     target_z = NEUTRAL_Z + (math.sin(s_phase * math.pi) * STEP_HEIGHT)
@@ -75,7 +75,7 @@ class TripodGait(WalkingGait):
                     s_phase = (leg_phase - 0.5) * 2
 
                     # SMOOTH X: Reverse Cosine to push the body forward
-                    target_x = math.cos(s_phase * math.pi) * (STEP_LENGTH / 2)
+                    target_x = NEUTRAL_X + math.cos(s_phase * math.pi) * (STEP_LENGTH / 2)
 
                     target_z = NEUTRAL_Z
 
