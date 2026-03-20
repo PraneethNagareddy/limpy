@@ -67,7 +67,7 @@ class TripodGait(WalkingGait):
                     target_x = -math.cos(s_phase * math.pi) * (STEP_LENGTH / 2)
 
                     # Z LIFT: Parabolic/Sinusoidal
-                    target_z = NEUTRAL_Z - (math.sin(s_phase * math.pi) * STEP_HEIGHT)
+                    target_z = NEUTRAL_Z + (math.sin(s_phase * math.pi) * STEP_HEIGHT)
 
                 # 2. STANCE PHASE (Leg is on ground pushing body)
                 else:
