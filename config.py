@@ -58,7 +58,7 @@ STEP_LENGTH = 50   # How far to step forward (mm)
 NEUTRAL_X = 80     # Your verified side-offset
 NEUTRAL_Y = 80     # Your verified side-offset
 NEUTRAL_Z = -50    # Your verified standing height
-GAIT_SPEED = 0.75   # Adjust for MG995 speed limits
+GAIT_SPEED = 2   # Adjust for MG995 speed limits
 DRIFT_COMPENSATION_FACTOR = 1
 
 INIT_COORDINATES = (80, 80, -50)
