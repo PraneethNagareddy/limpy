@@ -83,9 +83,9 @@ class TripodGait(WalkingGait):
                     s_phase = (leg_phase - 0.5) * 2
 
                     # Linear movement for keeping the body moving at constant speed
-                    target_x = NEUTRAL_X + (current_step_length / 2) - (s_phase * current_step_length)
+                    target_x = NEUTRAL_X + (STEP_LENGTH / 2) - (s_phase * current_step_length)
                     if is_rear_leg:
-                        target_x = NEUTRAL_X - (current_step_length / 2) + (s_phase * current_step_length)
+                        target_x = NEUTRAL_X - (STEP_LENGTH / 2) + (s_phase * current_step_length)
 
                     target_z = NEUTRAL_Z
 
