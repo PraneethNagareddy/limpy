@@ -71,6 +71,9 @@ class TripodGait(WalkingGait):
                     # Moves from -half to +half length
                     target_x = NEUTRAL_X-(math.cos(s_phase * math.pi) * (STEP_LENGTH / 2))
 
+                    if is_rear_leg:
+                        target_x = NEUTRAL_X+(math.cos(s_phase * math.pi) * (STEP_LENGTH / 2))
+
                     # Z LIFT: Parabolic/Sinusoidal
                     target_z = NEUTRAL_Z + (math.sin(s_phase * math.pi) * STEP_HEIGHT)
 
@@ -81,12 +84,11 @@ class TripodGait(WalkingGait):
 
                     # Linear movement for keeping the body moving at constant speed
                     target_x = NEUTRAL_X + (STEP_LENGTH / 2) - (s_phase * STEP_LENGTH)
+                    if is_rear_leg:
+                        target_x = NEUTRAL_X - (STEP_LENGTH / 2) + (s_phase * STEP_LENGTH)
 
                     target_z = NEUTRAL_Z
 
-                actual_target_x = target_x
-                if is_rear_leg:
-                    actual_target_x = -target_x
                 # Move the leg
-                leg.move_to_position(actual_target_x, NEUTRAL_Y, target_z)
+                leg.move_to_position(target_x, NEUTRAL_Y, target_z)
             time.sleep(0.01)  # 50Hz update rate
