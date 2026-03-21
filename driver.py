@@ -46,7 +46,7 @@ rear_right_ankle_config = JointConfig("TowerPro MG90S", "Positional", "Rear Righ
 rear_right_knee_joint = Joint(rear_right_knee_config)
 rear_right_ankle_joint = Joint(rear_right_ankle_config)
 rear_right_hip_joint = Joint(rear_right_hip_config)
-rear_right_leg = Leg(rear_right_hip_joint, rear_right_knee_joint, rear_right_ankle_joint, LegConfig(mount_angle=45, position=Legs.REAR_RIGHT))
+rear_right_leg = Leg(rear_right_hip_joint, rear_right_knee_joint, rear_right_ankle_joint, LegConfig(mount_angle=45, position=Legs.REAR_RIGHT, hip_trim_angle=10))
 
 
 middle_right_ankle_config = JointConfig("TowerPro MG90S", "Positional", "Middle Right Ankle", channel=4, i2c_address=0x40)

@@ -74,9 +74,7 @@ class TripodGait(WalkingGait):
                     # Map 0.5-1.0 to a 0.0-1.0 sub-phase
                     s_phase = (leg_phase - 0.5) * 2
 
-                    # SMOOTH X: Reverse Cosine to push the body forward
-                    #target_x = NEUTRAL_X + (math.cos(s_phase * math.pi) * (STEP_LENGTH / 2))
-
+                    # Linear movement for keeping the body moving at constant speed
                     target_x = NEUTRAL_X + (STEP_LENGTH / 2) - (s_phase * STEP_LENGTH)
 
                     target_z = NEUTRAL_Z
