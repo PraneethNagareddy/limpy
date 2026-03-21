@@ -59,7 +59,10 @@ NEUTRAL_X = 80     # Your verified side-offset
 NEUTRAL_Y = 80     # Your verified side-offset
 NEUTRAL_Z = -50    # Your verified standing height
 GAIT_SPEED = 0.75   # Adjust for MG995 speed limits
+DRIFT_COMPENSATION_FACTOR = 0.95
 
 INIT_COORDINATES = (80, 80, -50)
 
 TRIPOD_GATE_A_GROUP = [1, 3, 5] #FrontRight, BackRight, MiddleLeft
+RIGHT_LEGS_GROUP = [1, 2, 3]
+LEFT_LEGS_GROUP = [4, 5, 6]
