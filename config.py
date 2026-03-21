@@ -53,7 +53,7 @@ FEMUR_Z_OFFSET_MM = -23
 STANCE_HEIGHT_MM = 40
 
 STEP_HEIGHT = 40   # How high to lift the leg (mm)
-STEP_LENGTH = 75   # How far to step forward (mm)
+STEP_LENGTH = 60   # How far to step forward (mm)
 
 NEUTRAL_X = 80     # Your verified side-offset
 NEUTRAL_Y = 80     # Your verified side-offset
