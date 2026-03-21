@@ -51,9 +51,13 @@ class TripodGait(WalkingGait):
                 leg_id = leg.config.position.value
                 is_group_a = leg_id in TRIPOD_GATE_A_GROUP  # FR, BR, ML
                 is_right_side_leg = leg_id in RIGHT_LEGS_GROUP
+                is_rear_leg = leg_id in REAR_LEGS_GROUP
+
                 current_step_length = STEP_LENGTH
                 if is_right_side_leg:
                     current_step_length = STEP_LENGTH * DRIFT_COMPENSATION_FACTOR
+
+
 
                 # Offset the timing of Group B by half a cycle
                 leg_phase = phase if is_group_a else (phase + 0.5) % 1.0
@@ -80,6 +84,9 @@ class TripodGait(WalkingGait):
 
                     target_z = NEUTRAL_Z
 
+                actual_target_x = target_x
+                if is_rear_leg:
+                    actual_target_x = -target_x
                 # Move the leg
-                leg.move_to_position(target_x, NEUTRAL_Y, target_z)
+                leg.move_to_position(actual_target_x, NEUTRAL_Y, target_z)
             time.sleep(0.01)  # 50Hz update rate

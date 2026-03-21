@@ -66,3 +66,4 @@ INIT_COORDINATES = (80, 80, -50)
 TRIPOD_GATE_A_GROUP = [1, 3, 5] #FrontRight, BackRight, MiddleLeft
 RIGHT_LEGS_GROUP = [1, 2, 3]
 LEFT_LEGS_GROUP = [4, 5, 6]
+REAR_LEGS_GROUP = [3, 4]
