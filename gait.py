@@ -39,7 +39,8 @@ class TripodGait(WalkingGait):
         start_time = time.time()
         #self.__init_walk_stance()
         while True:
-            t = (time.time() - start_time) * GAIT_SPEED
+            current_loop_time = time.time()
+            t = (current_loop_time - start_time) * GAIT_SPEED
 
             # Phase 0 to 1 represents one full step cycle
             phase = t % 1.0
@@ -91,4 +92,4 @@ class TripodGait(WalkingGait):
 
                 # Move the leg
                 leg.move_to_position(target_x, NEUTRAL_Y, target_z)
-            time.sleep(0.01)  # 50Hz update rate
+            time.sleep(0.02)  # 50Hz update rate
