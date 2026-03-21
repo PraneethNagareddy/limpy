@@ -81,4 +81,4 @@ class TripodGait(WalkingGait):
 
                 # Move the leg
                 leg.move_to_position(target_x, NEUTRAL_Y, target_z)
-            time.sleep(0.03)  # 50Hz update rate
+            time.sleep(0.1)  # 50Hz update rate
