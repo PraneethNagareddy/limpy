@@ -64,7 +64,7 @@ middle_left_hip_config = JointConfig("TowerPro MG90S", "Positional", "Middle Lef
 middle_left_knee_joint = Joint(middle_left_knee_config)
 middle_left_ankle_joint = Joint(middle_left_ankle_config)
 middle_left_hip_joint = Joint(middle_left_hip_config)
-middle_left_leg = Leg(middle_left_hip_joint, middle_left_knee_joint, middle_left_ankle_joint, LegConfig(mount_angle=45, position=Legs.MIDDLE_LEFT, inverse_hip=True, hip_trim_angle=5))
+middle_left_leg = Leg(middle_left_hip_joint, middle_left_knee_joint, middle_left_ankle_joint, LegConfig(mount_angle=45, position=Legs.MIDDLE_LEFT, inverse_hip=True, hip_trim_angle=7))
 
 def on_obstacle_distance_measure_front(distance_in_cm: float):
     pass
