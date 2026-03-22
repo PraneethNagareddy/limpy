@@ -23,12 +23,6 @@ class WalkingGait:
     def turn_right(self):
         pass
 
-    def step_left(self):
-        pass
-
-    def step_right(self):
-        pass
-
 
 class TripodGait(WalkingGait):
     def __init__(self, spider: Spider):
@@ -64,6 +58,8 @@ class TripodGait(WalkingGait):
                 if is_right_side_leg:
                     current_step_length = STEP_LENGTH * DRIFT_COMPENSATION_FACTOR
 
+
+
                 # Offset the timing of Group B by half a cycle
                 leg_phase = phase if is_group_a else (phase + 0.5) % 1.0
 
@@ -72,12 +68,12 @@ class TripodGait(WalkingGait):
                     # Map 0.0-0.5 to a 0.0-1.0 sub-phase
                     s_phase = leg_phase * 2
 
-                    # Linear X movement
-                    # Moves from -half to +half length linearly
-                    target_x = NEUTRAL_X - (current_step_length / 2) + (s_phase * current_step_length)
+                    # SMOOTH X: Uses Cosine to accelerate/decelerate
+                    # Moves from -half to +half length
+                    target_x = NEUTRAL_X-(math.cos(s_phase * math.pi) * (STEP_LENGTH / 2))
 
                     if is_rear_leg:
-                        target_x = NEUTRAL_X + (current_step_length / 2) - (s_phase * current_step_length)
+                        target_x = NEUTRAL_X+(math.cos(s_phase * math.pi) * (STEP_LENGTH / 2))
 
                     # Z LIFT: Parabolic/Sinusoidal
                     target_z = NEUTRAL_Z + (math.sin(s_phase * math.pi) * STEP_HEIGHT)
@@ -88,9 +84,9 @@ class TripodGait(WalkingGait):
                     s_phase = (leg_phase - 0.5) * 2
 
                     # Linear movement for keeping the body moving at constant speed
-                    target_x = NEUTRAL_X + (current_step_length / 2) - (s_phase * current_step_length)
+                    target_x = NEUTRAL_X + (STEP_LENGTH / 2) - (s_phase * STEP_LENGTH)
                     if is_rear_leg:
-                        target_x = NEUTRAL_X - (current_step_length / 2) + (s_phase * current_step_length)
+                        target_x = NEUTRAL_X - (STEP_LENGTH / 2) + (s_phase * STEP_LENGTH)
 
                     target_z = NEUTRAL_Z
 
