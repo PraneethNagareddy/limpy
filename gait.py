@@ -28,7 +28,7 @@ class TripodGait(WalkingGait):
     def __init__(self, spider: Spider):
         super().__init__(spider)
         # 100 steps per full cycle
-        self.total_steps_per_cycle = 100
+        self.total_steps_per_cycle = 50
 
     def __init_walk_stance(self):
         for leg in self.spider.legs:
