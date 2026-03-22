@@ -28,7 +28,7 @@ class TripodGait(WalkingGait):
     def __init__(self, spider: Spider):
         super().__init__(spider)
         # 100 steps per full cycle
-        self.total_steps_per_cycle = 50
+        self.total_steps_per_cycle = 25
 
     def __init_walk_stance(self):
         for leg in self.spider.legs:
@@ -93,4 +93,4 @@ class TripodGait(WalkingGait):
                 leg.move_to_position(target_x, NEUTRAL_Y, target_z)
             
             step_counter = (step_counter + 1) % self.total_steps_per_cycle
-            time.sleep(0.0025)  # 400Hz update rate
+            time.sleep(0.01)  # 400Hz update rate
