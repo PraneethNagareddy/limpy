@@ -52,12 +52,18 @@ class KeyboardController:
                 elif key == '\x1b[B':  # Down Arrow
                     logging.info("Down Arrow Pressed")
                     self.gait.walk_backward()
-                elif key == '\x1b[D':  # Left Arrow
-                    logging.info("Left Arrow Pressed")
+                elif key.lower() == 'a':  # 'a' or 'A' key
+                    logging.info("A Key Pressed (Step Left)")
                     self.gait.step_left()
-                elif key == '\x1b[C':  # Right Arrow
-                    logging.info("Right Arrow Pressed")
+                elif key.lower() == 'd':  # 'd' or 'D' key
+                    logging.info("D Key Pressed (Step Right)")
                     self.gait.step_right()
+                elif key == '\x1b[D':  # Left Arrow
+                    logging.info("Left Arrow Pressed (Turn Left)")
+                    self.gait.turn_left()
+                elif key == '\x1b[C':  # Right Arrow
+                    logging.info("Right Arrow Pressed (Turn Right)")
+                    self.gait.turn_right()
                 elif key == 'ctrl+D':  # Ctrl + Left Arrow
                     logging.info("Ctrl+Left Pressed")
                     self.gait.turn_left()

@@ -19,11 +19,11 @@ def main():
     print("Controls:")
     print("  Up Arrow       : Walk Forward")
     print("  Down Arrow     : Walk Backward")
-    print("  Left Arrow     : Step Left")
-    print("  Right Arrow    : Step Right")
-    print("  Ctrl + Left    : Turn Left (Single Step)")
-    print("  Ctrl + Right   : Turn Right (Single Step)")
-    print("  ESC            : Stop & Exit")
+    print("  'A' Key        : Step Left")
+    print("  'D' Key        : Step Right")
+    print("  Left Arrow     : Turn Left")
+    print("  Right Arrow    : Turn Right")
+    print("  ESC / 'Q'      : Stop & Exit")
     print("="*50 + "\n")
     
     try:

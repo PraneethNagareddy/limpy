@@ -36,11 +36,6 @@ class TripodGait(WalkingGait):
         super().__init__(spider)
         self.gait_start_time = None
 
-    def __init_walk_stance(self):
-        for leg in self.spider.legs:
-            leg.move_to_position(-15, 60, 130, with_ease=True)
-            logging.info("Leg %f initiated.", leg.config.position.name)
-
     def _get_phase(self):
         if self.gait_start_time is None:
             self.gait_start_time = time.time()
