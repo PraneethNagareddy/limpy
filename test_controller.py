@@ -27,12 +27,8 @@ def main():
     try:
         # Start listening for key presses
         controller.start()
-    except KeyboardInterrupt:
-        logging.info("Interrupted by user. Exiting...")
     except Exception as e:
         logging.error(f"Failed to start controller: {e}")
-        print("\nNote: On Linux/macOS, the 'keyboard' library usually requires sudo privileges.")
-        print("Try running with: sudo python3 test_controller.py")
     finally:
         controller.stop()
         logging.info("Controller stopped.")

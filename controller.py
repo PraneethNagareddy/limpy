@@ -4,7 +4,6 @@ from gait import TripodGait
 import logging
 import threading
 import time
-import sys
 
 class KeyboardController:
     def __init__(self, spider: Spider):
@@ -16,55 +15,33 @@ class KeyboardController:
         self.running = True
         logging.info("Keyboard controller started. Use arrow keys to move. (Press 'esc' to stop)")
         
-        # Determine the OS to adjust how we handle standard input 
-        # so it doesn't print raw escape codes to terminal
-        if sys.platform != 'win32':
-            import termios
-            import tty
-            # Save original terminal settings
-            fd = sys.stdin.fileno()
-            old_settings = termios.tcgetattr(fd)
-            # Set to raw mode to suppress echo of escape characters
+        while self.running:
             try:
-                tty.setraw(sys.stdin.fileno())
-            except termios.error:
-                pass # Not a real terminal, e.g., in PyCharm run tool window
-        
-        try:
-            while self.running:
-                try:
-                    if keyboard.is_pressed('ctrl+left'):
-                        self.gait.turn_left()
-                        # Wait for key release
-                        while keyboard.is_pressed('ctrl+left'):
-                            time.sleep(0.01)
-                    elif keyboard.is_pressed('ctrl+right'):
-                        self.gait.turn_right()
-                        # Wait for key release
-                        while keyboard.is_pressed('ctrl+right'):
-                            time.sleep(0.01)
-                    elif keyboard.is_pressed('up'):
-                        self.gait.walk_forward()
-                    elif keyboard.is_pressed('down'):
-                        self.gait.walk_backward()
-                    elif keyboard.is_pressed('left'):
-                        self.gait.step_left()
-                    elif keyboard.is_pressed('right'):
-                        self.gait.step_right()
-                    elif keyboard.is_pressed('esc'):
-                        self.stop()
-                    else:
+                if keyboard.is_pressed('ctrl+left'):
+                    self.gait.turn_left()
+                    # Wait for key release
+                    while keyboard.is_pressed('ctrl+left'):
                         time.sleep(0.01)
-                except Exception as e:
-                    logging.error(f"Error in keyboard controller: {e}")
-                    self.running = False
-        finally:
-            if sys.platform != 'win32':
-                try:
-                    # Restore original terminal settings
-                    termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
-                except:
-                    pass
+                elif keyboard.is_pressed('ctrl+right'):
+                    self.gait.turn_right()
+                    # Wait for key release
+                    while keyboard.is_pressed('ctrl+right'):
+                        time.sleep(0.01)
+                elif keyboard.is_pressed('up'):
+                    self.gait.walk_forward()
+                elif keyboard.is_pressed('down'):
+                    self.gait.walk_backward()
+                elif keyboard.is_pressed('left'):
+                    self.gait.step_left()
+                elif keyboard.is_pressed('right'):
+                    self.gait.step_right()
+                elif keyboard.is_pressed('esc'):
+                    self.stop()
+                else:
+                    time.sleep(0.01)
+            except Exception as e:
+                logging.error(f"Error in keyboard controller: {e}")
+                self.running = False
 
     def stop(self):
         self.running = False
