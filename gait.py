@@ -93,4 +93,4 @@ class TripodGait(WalkingGait):
                 leg.move_to_position(target_x, NEUTRAL_Y, target_z)
             
             step_counter = (step_counter + 1) % self.total_steps_per_cycle
-            time.sleep(0.02)  # 50Hz update rate
+            time.sleep(0.01)  # 100Hz update rate
