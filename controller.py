@@ -1,4 +1,4 @@
-import keyboard
+import sys
 from spider import Spider
 from gait import TripodGait
 import logging
@@ -11,32 +11,61 @@ class KeyboardController:
         self.gait = TripodGait(spider)
         self.running = False
         
+    def get_key(self):
+        """Reads a single keypress or escape sequence from the terminal"""
+        import termios
+        import tty
+        fd = sys.stdin.fileno()
+        old_settings = termios.tcgetattr(fd)
+        try:
+            tty.setraw(sys.stdin.fileno())
+            ch = sys.stdin.read(1)
+            # Check for escape sequence
+            if ch == '\x1b':
+                ch2 = sys.stdin.read(1)
+                if ch2 == '[':
+                    ch3 = sys.stdin.read(1)
+                    if ch3 == '1': # Might be ctrl+arrow (e.g., \x1b[1;5C)
+                        ch4 = sys.stdin.read(1)
+                        if ch4 == ';':
+                            ch5 = sys.stdin.read(1)
+                            if ch5 == '5':
+                                ch6 = sys.stdin.read(1)
+                                return 'ctrl+' + ch6
+                    return '\x1b[' + ch3
+                return ch
+        finally:
+            termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+        return ch
+
     def start(self):
         self.running = True
-        logging.info("Keyboard controller started. Use arrow keys to move. (Press 'esc' to stop)")
+        logging.info("Keyboard controller started. Use arrow keys to move. (Press 'q' or 'esc' to stop)")
         
         while self.running:
             try:
-                if keyboard.is_pressed('ctrl+left'):
-                    self.gait.turn_left()
-                    # Wait for key release
-                    while keyboard.is_pressed('ctrl+left'):
-                        time.sleep(0.01)
-                elif keyboard.is_pressed('ctrl+right'):
-                    self.gait.turn_right()
-                    # Wait for key release
-                    while keyboard.is_pressed('ctrl+right'):
-                        time.sleep(0.01)
-                elif keyboard.is_pressed('up'):
-                    logging.info("Up Pressed")
+                key = self.get_key()
+                
+                if key == '\x1b[A':  # Up Arrow
+                    logging.info("Up Arrow Pressed")
                     self.gait.walk_forward()
-                elif keyboard.is_pressed('down'):
+                elif key == '\x1b[B':  # Down Arrow
+                    logging.info("Down Arrow Pressed")
                     self.gait.walk_backward()
-                elif keyboard.is_pressed('left'):
+                elif key == '\x1b[D':  # Left Arrow
+                    logging.info("Left Arrow Pressed")
                     self.gait.step_left()
-                elif keyboard.is_pressed('right'):
+                elif key == '\x1b[C':  # Right Arrow
+                    logging.info("Right Arrow Pressed")
                     self.gait.step_right()
-                elif keyboard.is_pressed('esc'):
+                elif key == 'ctrl+D':  # Ctrl + Left Arrow
+                    logging.info("Ctrl+Left Pressed")
+                    self.gait.turn_left()
+                elif key == 'ctrl+C':  # Ctrl + Right Arrow
+                    logging.info("Ctrl+Right Pressed")
+                    self.gait.turn_right()
+                elif key == '\x1b' or key.lower() == 'q' or key == '\x03':  # Esc, Q, or Ctrl+C
+                    logging.info("Exit key pressed.")
                     self.stop()
                 else:
                     time.sleep(0.01)
