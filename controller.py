@@ -29,14 +29,20 @@ class KeyboardController:
                 
                 ch2 = sys.stdin.read(1)
                 if ch2 == '[':
+                    if not select.select([sys.stdin], [], [], 0.05)[0]:
+                        return '\x1b['
+                        
                     ch3 = sys.stdin.read(1)
                     if ch3 == '1': # Might be modifier+arrow (e.g., \x1b[1;2C for Shift)
-                        ch4 = sys.stdin.read(1)
-                        if ch4 == ';':
-                            ch5 = sys.stdin.read(1)
-                            if ch5 == '2': # 2 is Shift
-                                ch6 = sys.stdin.read(1)
-                                return 'shift+' + ch6
+                        if select.select([sys.stdin], [], [], 0.05)[0]:
+                            ch4 = sys.stdin.read(1)
+                            if ch4 == ';':
+                                if select.select([sys.stdin], [], [], 0.05)[0]:
+                                    ch5 = sys.stdin.read(1)
+                                    if ch5 == '2': # 2 is Shift
+                                        if select.select([sys.stdin], [], [], 0.05)[0]:
+                                            ch6 = sys.stdin.read(1)
+                                            return 'shift+' + ch6
                     return '\x1b[' + ch3
                 return ch + ch2
         finally:
@@ -70,7 +76,7 @@ class KeyboardController:
                     logging.info("Shift+Right Pressed")
                     self.gait.turn_right()
                 elif key == '\x1b' or key.lower() == 'q' or key == '\x03':  # Esc, Q, or Ctrl+C
-                    logging.info("Exit key pressed.")
+                    logging.info(f"Exit key pressed.")
                     self.stop()
                 else:
                     time.sleep(0.01)
