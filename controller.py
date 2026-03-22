@@ -22,18 +22,41 @@ class KeyboardController:
             ch = sys.stdin.read(1)
             # Check for escape sequence
             if ch == '\x1b':
+                # Quick non-blocking read to see if more chars follow
+                # Terminal sends \x1b alone for ESC, but multiple for arrows
+                import select
+                if not select.select([sys.stdin], [], [], 0.05)[0]:
+                    return ch
+                
                 ch2 = sys.stdin.read(1)
-                if ch2 == '[':
+                
+                # Check for Alt+Arrow (Mac often sends Esc + ESC + [ + A or Esc + [ + A)
+                # But we handle Alt+Arrow standard xterm format: \x1b\x1b[C or \x1b[1;3C
+                if ch2 == '\x1b':
+                    if select.select([sys.stdin], [], [], 0.05)[0]:
+                        ch3 = sys.stdin.read(1)
+                        if ch3 == '[':
+                            ch4 = sys.stdin.read(1)
+                            return 'alt+' + ch4
+                elif ch2 == '[':
                     ch3 = sys.stdin.read(1)
-                    if ch3 == '1': # Might be ctrl+arrow (e.g., \x1b[1;5C)
+                    if ch3 == '1': # Might be modifier+arrow (e.g., \x1b[1;3C for Alt)
                         ch4 = sys.stdin.read(1)
                         if ch4 == ';':
                             ch5 = sys.stdin.read(1)
-                            if ch5 == '5':
+                            if ch5 == '3': # 3 is Alt/Option
+                                ch6 = sys.stdin.read(1)
+                                return 'alt+' + ch6
+                            elif ch5 == '5': # 5 is Ctrl
                                 ch6 = sys.stdin.read(1)
                                 return 'ctrl+' + ch6
                     return '\x1b[' + ch3
-                return ch
+                elif ch2 == 'b':  # Mac Terminal often maps Option+Left to Esc+b
+                    return 'alt+D'
+                elif ch2 == 'f':  # Mac Terminal often maps Option+Right to Esc+f
+                    return 'alt+C'
+                    
+                return ch + ch2
         finally:
             termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
         return ch
@@ -58,11 +81,11 @@ class KeyboardController:
                 elif key == '\x1b[C':  # Right Arrow
                     logging.info("Right Arrow Pressed")
                     self.gait.step_right()
-                elif key == 'ctrl+D':  # Ctrl + Left Arrow
-                    logging.info("Ctrl+Left Pressed")
+                elif key == 'alt+D':  # Alt + Left Arrow
+                    logging.info("Alt+Left Pressed")
                     self.gait.turn_left()
-                elif key == 'ctrl+C':  # Ctrl + Right Arrow
-                    logging.info("Ctrl+Right Pressed")
+                elif key == 'alt+C':  # Alt + Right Arrow
+                    logging.info("Alt+Right Pressed")
                     self.gait.turn_right()
                 elif key == '\x1b' or key.lower() == 'q' or key == '\x03':  # Esc, Q, or Ctrl+C
                     logging.info("Exit key pressed.")

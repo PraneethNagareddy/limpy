@@ -21,9 +21,9 @@ def main():
     print("  Down Arrow     : Walk Backward")
     print("  Left Arrow     : Step Left")
     print("  Right Arrow    : Step Right")
-    print("  Ctrl + Left    : Turn Left (Single Step)")
-    print("  Ctrl + Right   : Turn Right (Single Step)")
-    print("  ESC            : Stop & Exit")
+    print("  Alt + Left     : Turn Left (Single Step)")
+    print("  Alt + Right    : Turn Right (Single Step)")
+    print("  Q / ESC        : Stop & Exit")
     print("="*50 + "\n")
     
     try:
