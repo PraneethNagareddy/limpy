@@ -23,6 +23,12 @@ class WalkingGait:
     def turn_right(self):
         pass
 
+    def step_left(self):
+        pass
+
+    def step_right(self):
+        pass
+
 
 class TripodGait(WalkingGait):
     def __init__(self, spider: Spider):
