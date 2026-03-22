@@ -34,14 +34,14 @@ class WalkingGait:
 class TripodGait(WalkingGait):
     def __init__(self, spider: Spider):
         super().__init__(spider)
-        # Decrease total_steps_per_cycle to make it faster
-        self.total_steps_per_cycle = 25
-        self.current_step = 0
+        self.gait_start_time = None
 
     def _get_phase(self):
-        phase = self.current_step / self.total_steps_per_cycle
-        self.current_step = (self.current_step + 1) % self.total_steps_per_cycle
-        return phase
+        if self.gait_start_time is None:
+            self.gait_start_time = time.time()
+        current_loop_time = time.time()
+        t = (current_loop_time - self.gait_start_time) * GAIT_SPEED
+        return t % 1.0
 
     def walk_forward(self, stride_distance_cm=5):
         # Code to move three legs off ground at once
@@ -89,8 +89,6 @@ class TripodGait(WalkingGait):
 
             # Move the leg
             leg.move_to_position(target_x, NEUTRAL_Y, target_z)
-        # No artificial sleep needed if we want maximum speed governed by update loop
-        pass
 
     def walk_backward(self, stride_distance_cm=5):
         phase = self._get_phase()
@@ -129,7 +127,6 @@ class TripodGait(WalkingGait):
                 target_z = NEUTRAL_Z
 
             leg.move_to_position(target_x, NEUTRAL_Y, target_z)
-        pass
 
     def turn_left(self):
         logging.info(f"Turning left")
@@ -177,7 +174,6 @@ class TripodGait(WalkingGait):
                 target_z = NEUTRAL_Z
 
             leg.move_to_position(target_x, NEUTRAL_Y, target_z)
-        pass
 
     def turn_right(self):
         logging.info(f"Turning right")
@@ -222,7 +218,6 @@ class TripodGait(WalkingGait):
                 target_z = NEUTRAL_Z
 
             leg.move_to_position(target_x, NEUTRAL_Y, target_z)
-        pass
 
 
     def step_left(self):
@@ -248,7 +243,6 @@ class TripodGait(WalkingGait):
                 target_z = NEUTRAL_Z
 
             leg.move_to_position(NEUTRAL_X, target_y, target_z)
-        pass
 
     def step_right(self):
         phase = self._get_phase()
@@ -273,4 +267,3 @@ class TripodGait(WalkingGait):
                 target_z = NEUTRAL_Z
 
             leg.move_to_position(NEUTRAL_X, target_y, target_z)
-        pass
