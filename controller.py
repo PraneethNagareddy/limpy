@@ -22,29 +22,18 @@ class KeyboardController:
             ch = sys.stdin.read(1)
             # Check for escape sequence
             if ch == '\x1b':
-                # Quick non-blocking read to see if more chars follow
-                import select
-                if not select.select([sys.stdin], [], [], 0.05)[0]:
-                    return ch
-                
                 ch2 = sys.stdin.read(1)
                 if ch2 == '[':
-                    if not select.select([sys.stdin], [], [], 0.05)[0]:
-                        return '\x1b['
-                        
                     ch3 = sys.stdin.read(1)
-                    if ch3 == '1': # Might be modifier+arrow (e.g., \x1b[1;2C for Shift)
-                        if select.select([sys.stdin], [], [], 0.05)[0]:
-                            ch4 = sys.stdin.read(1)
-                            if ch4 == ';':
-                                if select.select([sys.stdin], [], [], 0.05)[0]:
-                                    ch5 = sys.stdin.read(1)
-                                    if ch5 == '2': # 2 is Shift
-                                        if select.select([sys.stdin], [], [], 0.05)[0]:
-                                            ch6 = sys.stdin.read(1)
-                                            return 'shift+' + ch6
+                    if ch3 == '1': # Might be ctrl+arrow (e.g., \x1b[1;5C)
+                        ch4 = sys.stdin.read(1)
+                        if ch4 == ';':
+                            ch5 = sys.stdin.read(1)
+                            if ch5 == '5':
+                                ch6 = sys.stdin.read(1)
+                                return 'ctrl+' + ch6
                     return '\x1b[' + ch3
-                return ch + ch2
+                return ch
         finally:
             termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
         return ch
@@ -69,14 +58,14 @@ class KeyboardController:
                 elif key == '\x1b[C':  # Right Arrow
                     logging.info("Right Arrow Pressed")
                     self.gait.step_right()
-                elif key == 'shift+D':  # Shift + Left Arrow
-                    logging.info("Shift+Left Pressed")
+                elif key == 'ctrl+D':  # Ctrl + Left Arrow
+                    logging.info("Ctrl+Left Pressed")
                     self.gait.turn_left()
-                elif key == 'shift+C':  # Shift + Right Arrow
-                    logging.info("Shift+Right Pressed")
+                elif key == 'ctrl+C':  # Ctrl + Right Arrow
+                    logging.info("Ctrl+Right Pressed")
                     self.gait.turn_right()
                 elif key == '\x1b' or key.lower() == 'q' or key == '\x03':  # Esc, Q, or Ctrl+C
-                    logging.info(f"Exit key pressed.")
+                    logging.info("Exit key pressed.")
                     self.stop()
                 else:
                     time.sleep(0.01)
