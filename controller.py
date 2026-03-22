@@ -28,6 +28,7 @@ class KeyboardController:
                     while keyboard.is_pressed('ctrl+right'):
                         time.sleep(0.01)
                 elif keyboard.is_pressed('up'):
+                    logging.info("Up Pressed")
                     self.gait.walk_forward()
                 elif keyboard.is_pressed('down'):
                     self.gait.walk_backward()
