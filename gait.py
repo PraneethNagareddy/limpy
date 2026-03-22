@@ -34,8 +34,8 @@ class WalkingGait:
 class TripodGait(WalkingGait):
     def __init__(self, spider: Spider):
         super().__init__(spider)
-        # 100 steps per full cycle
-        self.total_steps_per_cycle = 15
+        # Decrease total_steps_per_cycle to make it faster
+        self.total_steps_per_cycle = 25
         self.current_step = 0
 
     def _get_phase(self):
@@ -89,7 +89,8 @@ class TripodGait(WalkingGait):
 
             # Move the leg
             leg.move_to_position(target_x, NEUTRAL_Y, target_z)
-        time.sleep(0.01)
+        # No artificial sleep needed if we want maximum speed governed by update loop
+        pass
 
     def walk_backward(self, stride_distance_cm=5):
         phase = self._get_phase()
@@ -128,7 +129,7 @@ class TripodGait(WalkingGait):
                 target_z = NEUTRAL_Z
 
             leg.move_to_position(target_x, NEUTRAL_Y, target_z)
-        time.sleep(0.01)
+        pass
 
     def turn_left(self):
         logging.info(f"Turning left")
@@ -176,7 +177,7 @@ class TripodGait(WalkingGait):
                 target_z = NEUTRAL_Z
 
             leg.move_to_position(target_x, NEUTRAL_Y, target_z)
-        time.sleep(0.01)
+        pass
 
     def turn_right(self):
         logging.info(f"Turning right")
@@ -221,7 +222,7 @@ class TripodGait(WalkingGait):
                 target_z = NEUTRAL_Z
 
             leg.move_to_position(target_x, NEUTRAL_Y, target_z)
-        time.sleep(0.01)
+        pass
 
 
     def step_left(self):
@@ -247,7 +248,7 @@ class TripodGait(WalkingGait):
                 target_z = NEUTRAL_Z
 
             leg.move_to_position(NEUTRAL_X, target_y, target_z)
-        time.sleep(0.01)
+        pass
 
     def step_right(self):
         phase = self._get_phase()
@@ -272,4 +273,4 @@ class TripodGait(WalkingGait):
                 target_z = NEUTRAL_Z
 
             leg.move_to_position(NEUTRAL_X, target_y, target_z)
-        time.sleep(0.01)
+        pass
