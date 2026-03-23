@@ -132,7 +132,7 @@ class TripodGait(WalkingGait):
         phase = self._get_phase()
         
         TURN_ANGLE = 50  # degrees
-        TURN_RADIUS = 100 # approximate radius for legs in mm (10cm)
+        TURN_RADIUS = 80 # approximate radius for legs in mm (10cm)
         TURN_LENGTH = TURN_RADIUS * math.radians(TURN_ANGLE)
         
         for leg in self.spider.legs:
@@ -179,7 +179,7 @@ class TripodGait(WalkingGait):
         phase = self._get_phase()
         
         TURN_ANGLE = 50  # degrees
-        TURN_RADIUS = 100 # approximate radius for legs in mm (10cm)
+        TURN_RADIUS = 80 # approximate radius for legs in mm (10cm)
         TURN_LENGTH = TURN_RADIUS * math.radians(TURN_ANGLE)
         
         for leg in self.spider.legs:
