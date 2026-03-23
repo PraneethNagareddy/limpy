@@ -65,12 +65,11 @@ class TripodGait(WalkingGait):
                 # Map 0.0-0.5 to a 0.0-1.0 sub-phase
                 s_phase = leg_phase * 2
 
-                # Linear X movement
-                # Moves from -half to +half length linearly
-                target_x = NEUTRAL_X - (current_step_length / 2) + (s_phase * current_step_length)
+                # SMOOTH X: Uses Cosine to accelerate/decelerate
+                target_x = NEUTRAL_X - (math.cos(s_phase * math.pi) * (current_step_length / 2))
 
                 if is_rear_leg:
-                    target_x = NEUTRAL_X + (current_step_length / 2) - (s_phase * current_step_length)
+                    target_x = NEUTRAL_X + (math.cos(s_phase * math.pi) * (current_step_length / 2))
 
                 # Z LIFT: Parabolic/Sinusoidal
                 target_z = NEUTRAL_Z + (math.sin(s_phase * math.pi) * STEP_HEIGHT)
@@ -89,7 +88,6 @@ class TripodGait(WalkingGait):
 
             # Move the leg
             leg.move_to_position(target_x, NEUTRAL_Y, target_z)
-            time.sleep(0.02)
 
     def walk_backward(self, stride_distance_cm=5):
         phase = self._get_phase()
@@ -110,10 +108,10 @@ class TripodGait(WalkingGait):
             if leg_phase < 0.5:
                 s_phase = leg_phase * 2
                 
-                target_x = NEUTRAL_X + (current_step_length / 2) - (s_phase * current_step_length)
+                target_x = NEUTRAL_X + (math.cos(s_phase * math.pi) * (current_step_length / 2))
 
                 if is_rear_leg:
-                    target_x = NEUTRAL_X - (current_step_length / 2) + (s_phase * current_step_length)
+                    target_x = NEUTRAL_X - (math.cos(s_phase * math.pi) * (current_step_length / 2))
 
                 target_z = NEUTRAL_Z + (math.sin(s_phase * math.pi) * STEP_HEIGHT)
 
@@ -128,7 +126,6 @@ class TripodGait(WalkingGait):
                 target_z = NEUTRAL_Z
 
             leg.move_to_position(target_x, NEUTRAL_Y, target_z)
-            time.sleep(0.02)
 
     def turn_left(self):
         logging.info(f"Turning left")
@@ -154,12 +151,12 @@ class TripodGait(WalkingGait):
                 
                 if move_forward:
                     # Moving forward: X from -half to +half
-                    target_x = NEUTRAL_X - (TURN_LENGTH / 2) + (s_phase * TURN_LENGTH)
-                    if is_rear_leg: target_x = NEUTRAL_X + (TURN_LENGTH / 2) - (s_phase * TURN_LENGTH)
+                    target_x = NEUTRAL_X - (math.cos(s_phase * math.pi) * (TURN_LENGTH / 2))
+                    if is_rear_leg: target_x = NEUTRAL_X + (math.cos(s_phase * math.pi) * (TURN_LENGTH / 2))
                 else:
                     # Moving backward: X from +half to -half
-                    target_x = NEUTRAL_X + (TURN_LENGTH / 2) - (s_phase * TURN_LENGTH)
-                    if is_rear_leg: target_x = NEUTRAL_X - (TURN_LENGTH / 2) + (s_phase * TURN_LENGTH)
+                    target_x = NEUTRAL_X + (math.cos(s_phase * math.pi) * (TURN_LENGTH / 2))
+                    if is_rear_leg: target_x = NEUTRAL_X - (math.cos(s_phase * math.pi) * (TURN_LENGTH / 2))
                     
                 target_z = NEUTRAL_Z + (math.sin(s_phase * math.pi) * STEP_HEIGHT)
             else:
@@ -176,7 +173,6 @@ class TripodGait(WalkingGait):
                 target_z = NEUTRAL_Z
 
             leg.move_to_position(target_x, NEUTRAL_Y, target_z)
-            time.sleep(0.02)
 
     def turn_right(self):
         logging.info(f"Turning right")
@@ -201,11 +197,11 @@ class TripodGait(WalkingGait):
                 s_phase = leg_phase * 2
                 
                 if move_forward:
-                    target_x = NEUTRAL_X - (TURN_LENGTH / 2) + (s_phase * TURN_LENGTH)
-                    if is_rear_leg: target_x = NEUTRAL_X + (TURN_LENGTH / 2) - (s_phase * TURN_LENGTH)
+                    target_x = NEUTRAL_X - (math.cos(s_phase * math.pi) * (TURN_LENGTH / 2))
+                    if is_rear_leg: target_x = NEUTRAL_X + (math.cos(s_phase * math.pi) * (TURN_LENGTH / 2))
                 else:
-                    target_x = NEUTRAL_X + (TURN_LENGTH / 2) - (s_phase * TURN_LENGTH)
-                    if is_rear_leg: target_x = NEUTRAL_X - (TURN_LENGTH / 2) + (s_phase * TURN_LENGTH)
+                    target_x = NEUTRAL_X + (math.cos(s_phase * math.pi) * (TURN_LENGTH / 2))
+                    if is_rear_leg: target_x = NEUTRAL_X - (math.cos(s_phase * math.pi) * (TURN_LENGTH / 2))
                     
                 target_z = NEUTRAL_Z + (math.sin(s_phase * math.pi) * STEP_HEIGHT)
             else:
@@ -221,7 +217,6 @@ class TripodGait(WalkingGait):
                 target_z = NEUTRAL_Z
 
             leg.move_to_position(target_x, NEUTRAL_Y, target_z)
-            time.sleep(0.02)
 
 
     def step_left(self):
@@ -237,7 +232,7 @@ class TripodGait(WalkingGait):
                 s_phase = leg_phase * 2
                 
                 # Moving left: Leg swings to the left (negative Y)
-                target_y = NEUTRAL_Y + (STEP_LENGTH / 2) - (s_phase * STEP_LENGTH)
+                target_y = NEUTRAL_Y + (math.cos(s_phase * math.pi) * (STEP_LENGTH / 2))
                 target_z = NEUTRAL_Z + (math.sin(s_phase * math.pi) * STEP_HEIGHT)
             else:
                 s_phase = (leg_phase - 0.5) * 2
@@ -247,7 +242,6 @@ class TripodGait(WalkingGait):
                 target_z = NEUTRAL_Z
 
             leg.move_to_position(NEUTRAL_X, target_y, target_z)
-            time.sleep(0.02)
 
     def step_right(self):
         phase = self._get_phase()
@@ -262,7 +256,7 @@ class TripodGait(WalkingGait):
                 s_phase = leg_phase * 2
                 
                 # Moving right: Leg swings to the right (positive Y)
-                target_y = NEUTRAL_Y - (STEP_LENGTH / 2) + (s_phase * STEP_LENGTH)
+                target_y = NEUTRAL_Y - (math.cos(s_phase * math.pi) * (STEP_LENGTH / 2))
                 target_z = NEUTRAL_Z + (math.sin(s_phase * math.pi) * STEP_HEIGHT)
             else:
                 s_phase = (leg_phase - 0.5) * 2
@@ -272,5 +266,3 @@ class TripodGait(WalkingGait):
                 target_z = NEUTRAL_Z
 
             leg.move_to_position(NEUTRAL_X, target_y, target_z)
-            time.sleep(0.02)
-
