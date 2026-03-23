@@ -30,6 +30,11 @@ class WalkingGait:
     def step_right(self):
         pass
 
+    def walk_omni(self, x: float, y: float, stride_factor: float = 1.0):
+        pass
+
+    def turn_omni(self, rx: float, ry: float, turn_factor: float = 1.0):
+        pass
 
 class TripodGait(WalkingGait):
     def __init__(self, spider: Spider):
@@ -42,6 +47,126 @@ class TripodGait(WalkingGait):
         current_loop_time = time.time()
         t = (current_loop_time - self.gait_start_time) * GAIT_SPEED
         return t % 1.0
+
+    def walk_omni(self, x: float, y: float, stride_factor: float = 1.0):
+        # x and y should be normalized between -1.0 and 1.0
+        # stride_factor scales the overall movement
+        
+        # If no movement is requested, return to neutral stance or do nothing
+        if abs(x) < 0.1 and abs(y) < 0.1:
+            return
+
+        magnitude = math.sqrt(x**2 + y**2)
+        if magnitude > 1.0:
+            x /= magnitude
+            y /= magnitude
+
+        phase = self._get_phase()
+
+        for leg in self.spider.legs:
+            leg_id = leg.config.position.value
+            is_group_a = leg_id in TRIPOD_GATE_A_GROUP
+            is_right_side_leg = leg_id in RIGHT_LEGS_GROUP
+            is_rear_leg = leg_id in REAR_LEGS_GROUP
+
+            # Calculate actual stride based on joystick input and drift compensation
+            current_step_x = STEP_LENGTH * x * stride_factor
+            current_step_y = STEP_LENGTH * y * stride_factor
+            
+            if is_right_side_leg:
+                current_step_x *= DRIFT_COMPENSATION_FACTOR
+                current_step_y *= DRIFT_COMPENSATION_FACTOR
+
+            leg_phase = phase if is_group_a else (phase + 0.5) % 1.0
+
+            if leg_phase < 0.5:
+                s_phase = leg_phase * 2
+                
+                # Swing Phase: move smoothly from negative offset to positive offset
+                offset_x = -(math.cos(s_phase * math.pi) * (current_step_x / 2))
+                offset_y = -(math.cos(s_phase * math.pi) * (current_step_y / 2))
+
+                if is_rear_leg:
+                    # Inverting x logic for rear legs as per original logic
+                    offset_x = (math.cos(s_phase * math.pi) * (current_step_x / 2))
+
+                target_x = NEUTRAL_X + offset_x
+                target_y = NEUTRAL_Y + offset_y
+                target_z = NEUTRAL_Z + (math.sin(s_phase * math.pi) * STEP_HEIGHT)
+            else:
+                s_phase = (leg_phase - 0.5) * 2
+                
+                # Stance Phase: linearly push the body
+                # Moves linearly from positive offset back to negative offset relative to body
+                offset_x = (current_step_x / 2) - (s_phase * current_step_x)
+                offset_y = (current_step_y / 2) - (s_phase * current_step_y)
+                
+                if is_rear_leg:
+                    offset_x = -(current_step_x / 2) + (s_phase * current_step_x)
+
+                target_x = NEUTRAL_X + offset_x
+                target_y = NEUTRAL_Y + offset_y
+                target_z = NEUTRAL_Z
+
+            leg.move_to_position(target_x, target_y, target_z)
+
+    def turn_omni(self, rx: float, ry: float, turn_factor: float = 1.0):
+        # Only turn if joystick is actively being pressed beyond a deadzone
+        magnitude = math.sqrt(rx**2 + ry**2)
+        if magnitude < 0.1:
+            return
+
+        # Continuous rotation based strictly on the horizontal axis of the right joystick (rx)
+        # Positive rx -> turn right, Negative rx -> turn left
+        # ry is technically the target angle if we map it to heading, but for a simple walking hexapod
+        # turning continuously until the joystick is released is the standard mapping.
+        
+        # We map rx directly to rotation strength
+        rotation_strength = rx * turn_factor
+        
+        TURN_ANGLE = 30  # Max degrees per step
+        TURN_RADIUS = 100 # approximate radius for legs in mm (10cm)
+        TURN_LENGTH = TURN_RADIUS * math.radians(TURN_ANGLE) * abs(rotation_strength)
+        
+        phase = self._get_phase()
+        
+        for leg in self.spider.legs:
+            leg_id = leg.config.position.value
+            is_group_a = leg_id in TRIPOD_GATE_A_GROUP
+            is_right_side_leg = leg_id in RIGHT_LEGS_GROUP
+            is_rear_leg = leg_id in REAR_LEGS_GROUP
+            
+            leg_phase = phase if is_group_a else (phase + 0.5) % 1.0
+            
+            # Left turn -> right side legs move forward, left side legs move backward
+            # Right turn -> left side legs move forward, right side legs move backward
+            is_turning_right = rotation_strength > 0
+            
+            if is_turning_right:
+                move_forward = not is_right_side_leg
+            else:
+                move_forward = is_right_side_leg
+            
+            if leg_phase < 0.5:
+                s_phase = leg_phase * 2
+                
+                if move_forward:
+                    target_y = NEUTRAL_Y - (math.cos(s_phase * math.pi) * (TURN_LENGTH / 2))
+                else:
+                    target_y = NEUTRAL_Y + (math.cos(s_phase * math.pi) * (TURN_LENGTH / 2))
+                    
+                target_z = NEUTRAL_Z + (math.sin(s_phase * math.pi) * STEP_HEIGHT)
+            else:
+                s_phase = (leg_phase - 0.5) * 2
+                
+                if move_forward:
+                    target_y = NEUTRAL_Y + (TURN_LENGTH / 2) - (s_phase * TURN_LENGTH)
+                else:
+                    target_y = NEUTRAL_Y - (TURN_LENGTH / 2) + (s_phase * TURN_LENGTH)
+                    
+                target_z = NEUTRAL_Z
+
+            leg.move_to_position(NEUTRAL_X, target_y, target_z)
 
     def walk_forward(self, stride_distance_cm=5):
         # Code to move three legs off ground at once
@@ -131,8 +256,8 @@ class TripodGait(WalkingGait):
         logging.info(f"Turning left")
         phase = self._get_phase()
         
-        TURN_ANGLE = 50  # degrees
-        TURN_RADIUS = 80 # approximate radius for legs in mm (10cm)
+        TURN_ANGLE = 30  # degrees
+        TURN_RADIUS = 100 # approximate radius for legs in mm (10cm)
         TURN_LENGTH = TURN_RADIUS * math.radians(TURN_ANGLE)
         
         for leg in self.spider.legs:
@@ -150,13 +275,11 @@ class TripodGait(WalkingGait):
                 s_phase = leg_phase * 2
                 
                 if move_forward:
-                    # Moving forward: X from -half to +half
-                    target_x = NEUTRAL_X - (math.cos(s_phase * math.pi) * (TURN_LENGTH / 2))
-                    if is_rear_leg: target_x = NEUTRAL_X + (math.cos(s_phase * math.pi) * (TURN_LENGTH / 2))
+                    # Moving forward: Y from -half to +half for arc
+                    target_y = NEUTRAL_Y - (math.cos(s_phase * math.pi) * (TURN_LENGTH / 2))
                 else:
-                    # Moving backward: X from +half to -half
-                    target_x = NEUTRAL_X + (math.cos(s_phase * math.pi) * (TURN_LENGTH / 2))
-                    if is_rear_leg: target_x = NEUTRAL_X - (math.cos(s_phase * math.pi) * (TURN_LENGTH / 2))
+                    # Moving backward: Y from +half to -half for arc
+                    target_y = NEUTRAL_Y + (math.cos(s_phase * math.pi) * (TURN_LENGTH / 2))
                     
                 target_z = NEUTRAL_Z + (math.sin(s_phase * math.pi) * STEP_HEIGHT)
             else:
@@ -164,22 +287,20 @@ class TripodGait(WalkingGait):
                 
                 if move_forward:
                     # Stance pushing body backward relative to leg (leg moves backward)
-                    target_x = NEUTRAL_X + (TURN_LENGTH / 2) - (s_phase * TURN_LENGTH)
-                    if is_rear_leg: target_x = NEUTRAL_X - (TURN_LENGTH / 2) + (s_phase * TURN_LENGTH)
+                    target_y = NEUTRAL_Y + (TURN_LENGTH / 2) - (s_phase * TURN_LENGTH)
                 else:
-                    target_x = NEUTRAL_X - (TURN_LENGTH / 2) + (s_phase * TURN_LENGTH)
-                    if is_rear_leg: target_x = NEUTRAL_X + (TURN_LENGTH / 2) - (s_phase * TURN_LENGTH)
+                    target_y = NEUTRAL_Y - (TURN_LENGTH / 2) + (s_phase * TURN_LENGTH)
                     
                 target_z = NEUTRAL_Z
 
-            leg.move_to_position(target_x, NEUTRAL_Y, target_z)
+            leg.move_to_position(NEUTRAL_X, target_y, target_z)
 
     def turn_right(self):
         logging.info(f"Turning right")
         phase = self._get_phase()
         
-        TURN_ANGLE = 50  # degrees
-        TURN_RADIUS = 80 # approximate radius for legs in mm (10cm)
+        TURN_ANGLE = 30  # degrees
+        TURN_RADIUS = 100 # approximate radius for legs in mm (10cm)
         TURN_LENGTH = TURN_RADIUS * math.radians(TURN_ANGLE)
         
         for leg in self.spider.legs:
@@ -197,26 +318,22 @@ class TripodGait(WalkingGait):
                 s_phase = leg_phase * 2
                 
                 if move_forward:
-                    target_x = NEUTRAL_X - (math.cos(s_phase * math.pi) * (TURN_LENGTH / 2))
-                    if is_rear_leg: target_x = NEUTRAL_X + (math.cos(s_phase * math.pi) * (TURN_LENGTH / 2))
+                    target_y = NEUTRAL_Y - (math.cos(s_phase * math.pi) * (TURN_LENGTH / 2))
                 else:
-                    target_x = NEUTRAL_X + (math.cos(s_phase * math.pi) * (TURN_LENGTH / 2))
-                    if is_rear_leg: target_x = NEUTRAL_X - (math.cos(s_phase * math.pi) * (TURN_LENGTH / 2))
+                    target_y = NEUTRAL_Y + (math.cos(s_phase * math.pi) * (TURN_LENGTH / 2))
                     
                 target_z = NEUTRAL_Z + (math.sin(s_phase * math.pi) * STEP_HEIGHT)
             else:
                 s_phase = (leg_phase - 0.5) * 2
                 
                 if move_forward:
-                    target_x = NEUTRAL_X + (TURN_LENGTH / 2) - (s_phase * TURN_LENGTH)
-                    if is_rear_leg: target_x = NEUTRAL_X - (TURN_LENGTH / 2) + (s_phase * TURN_LENGTH)
+                    target_y = NEUTRAL_Y + (TURN_LENGTH / 2) - (s_phase * TURN_LENGTH)
                 else:
-                    target_x = NEUTRAL_X - (TURN_LENGTH / 2) + (s_phase * TURN_LENGTH)
-                    if is_rear_leg: target_x = NEUTRAL_X + (TURN_LENGTH / 2) - (s_phase * TURN_LENGTH)
+                    target_y = NEUTRAL_Y - (TURN_LENGTH / 2) + (s_phase * TURN_LENGTH)
                     
                 target_z = NEUTRAL_Z
 
-            leg.move_to_position(target_x, NEUTRAL_Y, target_z)
+            leg.move_to_position(NEUTRAL_X, target_y, target_z)
 
 
     def step_left(self):

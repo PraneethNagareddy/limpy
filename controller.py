@@ -10,74 +10,110 @@ class KeyboardController:
         self.spider = spider
         self.gait = TripodGait(spider)
         self.running = False
+        self.keys_pressed = set()
         
-    def get_key(self):
-        """Reads a single keypress or escape sequence from the terminal"""
+    def _read_keys(self):
+        """Reads keypresses in a separate thread"""
         import termios
         import tty
+        import select
+        
         fd = sys.stdin.fileno()
         old_settings = termios.tcgetattr(fd)
+        
         try:
             tty.setraw(sys.stdin.fileno())
-            ch = sys.stdin.read(1)
-            # Check for escape sequence
-            if ch == '\x1b':
-                ch2 = sys.stdin.read(1)
-                if ch2 == '[':
-                    ch3 = sys.stdin.read(1)
-                    if ch3 == '1': # Might be ctrl+arrow (e.g., \x1b[1;5C)
-                        ch4 = sys.stdin.read(1)
-                        if ch4 == ';':
-                            ch5 = sys.stdin.read(1)
-                            if ch5 == '5':
-                                ch6 = sys.stdin.read(1)
-                                return 'ctrl+' + ch6
-                    return '\x1b[' + ch3
-                return ch
+            while self.running:
+                if select.select([sys.stdin], [], [], 0.05)[0]:
+                    ch = sys.stdin.read(1)
+                    if ch == '\x1b':
+                        if select.select([sys.stdin], [], [], 0.05)[0]:
+                            ch2 = sys.stdin.read(1)
+                            if ch2 == '[':
+                                ch3 = sys.stdin.read(1)
+                                if ch3 in ['A', 'B', 'C', 'D']:
+                                    key = '\x1b[' + ch3
+                                    self.keys_pressed.add(key)
+                                elif ch3 == '1': 
+                                    # handle ctrl
+                                    ch4 = sys.stdin.read(1)
+                                    if ch4 == ';':
+                                        ch5 = sys.stdin.read(1)
+                                        if ch5 == '5':
+                                            ch6 = sys.stdin.read(1)
+                                            key = 'ctrl+' + ch6
+                                            self.keys_pressed.add(key)
+                    elif ch.lower() in ['q', 'a', 'd', 'z', 'c', '\x03']:
+                        self.keys_pressed.add(ch.lower())
+                else:
+                    # If nothing is pressed for 50ms, clear the buffer to stop walking
+                    self.keys_pressed.clear()
+                    
         finally:
             termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
-        return ch
 
     def start(self):
         self.running = True
         logging.info("Keyboard controller started. Use arrow keys to move. (Press 'q' or 'esc' to stop)")
         
+        # Start a thread to constantly read keys, allowing us to detect multiple keys or 'key up'
+        self.reader_thread = threading.Thread(target=self._read_keys)
+        self.reader_thread.start()
+        
         while self.running:
             try:
-                key = self.get_key()
-                
-                if key == '\x1b[A':  # Up Arrow
-                    logging.info("Up Arrow Pressed")
-                    self.gait.walk_forward()
-                elif key == '\x1b[B':  # Down Arrow
-                    logging.info("Down Arrow Pressed")
-                    self.gait.walk_backward()
-                elif key.lower() == 'a':  # 'a' or 'A' key
-                    logging.info("A Key Pressed (Step Left)")
-                    self.gait.step_left()
-                elif key.lower() == 'd':  # 'd' or 'D' key
-                    logging.info("D Key Pressed (Step Right)")
-                    self.gait.step_right()
-                elif key == '\x1b[D':  # Left Arrow
-                    logging.info("Left Arrow Pressed (Turn Left)")
-                    self.gait.turn_left()
-                elif key == '\x1b[C':  # Right Arrow
-                    logging.info("Right Arrow Pressed (Turn Right)")
-                    self.gait.turn_right()
-                elif key == 'ctrl+D':  # Ctrl + Left Arrow
-                    logging.info("Ctrl+Left Pressed")
-                    self.gait.turn_left()
-                elif key == 'ctrl+C':  # Ctrl + Right Arrow
-                    logging.info("Ctrl+Right Pressed")
-                    self.gait.turn_right()
-                elif key == '\x1b' or key.lower() == 'q' or key == '\x03':  # Esc, Q, or Ctrl+C
+                # Handle Exit
+                if 'q' in self.keys_pressed or '\x03' in self.keys_pressed:
                     logging.info("Exit key pressed.")
                     self.stop()
+                    break
+
+                # Handle discrete turns (mapped to 'a' and 'd')
+                if 'a' in self.keys_pressed:
+                    logging.info("'a' Pressed (Turn Left)")
+                    self.gait.turn_left()
+                    continue
+                if 'd' in self.keys_pressed:
+                    logging.info("'d' Pressed (Turn Right)")
+                    self.gait.turn_right()
+                    continue
+
+                # Handle step left and step right (mapped to 'z' and 'c')
+                if 'z' in self.keys_pressed:
+                    logging.info("'z' Pressed (Step Left)")
+                    self.gait.step_left()
+                    continue
+                if 'c' in self.keys_pressed:
+                    logging.info("'c' Pressed (Step Right)")
+                    self.gait.step_right()
+                    continue
+
+                # Handle continuous omni directional walking
+                x = 0.0
+                y = 0.0
+                
+                # Up / Down
+                if '\x1b[A' in self.keys_pressed:
+                    x += 1.0
+                if '\x1b[B' in self.keys_pressed:
+                    x -= 1.0
+                    
+                # Left / Right (Arrow keys)
+                if '\x1b[D' in self.keys_pressed:
+                    y -= 1.0
+                if '\x1b[C' in self.keys_pressed:
+                    y += 1.0
+
+                if x != 0.0 or y != 0.0:
+                    self.gait.walk_omni(x, y, stride_factor=0.5)
                 else:
                     time.sleep(0.01)
+                    
             except Exception as e:
                 logging.error(f"Error in keyboard controller: {e}")
                 self.running = False
+
+        self.reader_thread.join()
 
     def stop(self):
         self.running = False
@@ -98,49 +134,62 @@ class PS4Controller:
             def __init__(self, gait, **kwargs):
                 Controller.__init__(self, **kwargs)
                 self.gait = gait
-                self.action = None
+                self.x = 0.0
+                self.y = 0.0
+                self.rx = 0.0
+                self.ry = 0.0
                 self.running = True
                 self.action_thread = threading.Thread(target=self.run_action)
                 self.action_thread.start()
 
             def run_action(self):
                 while self.running:
-                    if self.action == 'forward':
-                        self.gait.walk_forward()
-                    elif self.action == 'backward':
-                        self.gait.walk_backward()
-                    elif self.action == 'step_left':
-                        self.gait.step_left()
-                    elif self.action == 'step_right':
-                        self.gait.step_right()
+                    # Prioritize turning over walking if right joystick is engaged
+                    if abs(self.rx) > 0.1 or abs(self.ry) > 0.1:
+                        self.gait.turn_omni(self.rx, self.ry, turn_factor=1.0)
+                    elif self.x != 0.0 or self.y != 0.0:
+                        # Assuming joystick throws max 32767 values, but pyPS4Controller maps them.
+                        # Normalizing to -1 to 1 based on pyPS4Controller max values (~32767)
+                        # We just send raw floats to walk_omni
+                        self.gait.walk_omni(self.x, self.y, stride_factor=1.0)
                     else:
                         time.sleep(0.01)
 
             def on_L3_up(self, value):
-                self.action = 'forward'
+                self.x = abs(value) / 32767.0
                 
             def on_L3_down(self, value):
-                self.action = 'backward'
+                self.x = -(abs(value) / 32767.0)
                 
             def on_L3_left(self, value):
-                self.action = 'step_left'
+                self.y = -(abs(value) / 32767.0)
                 
             def on_L3_right(self, value):
-                self.action = 'step_right'
+                self.y = abs(value) / 32767.0
 
             def on_L3_y_at_rest(self):
-                if self.action in ['forward', 'backward']:
-                    self.action = None
+                self.x = 0.0
 
             def on_L3_x_at_rest(self):
-                if self.action in ['step_left', 'step_right']:
-                    self.action = None
+                self.y = 0.0
                 
             def on_R3_left(self, value):
-                self.gait.turn_left()
+                self.ry = -(abs(value) / 32767.0)
                 
             def on_R3_right(self, value):
-                self.gait.turn_right()
+                self.ry = abs(value) / 32767.0
+                
+            def on_R3_up(self, value):
+                self.rx = abs(value) / 32767.0
+                
+            def on_R3_down(self, value):
+                self.rx = -(abs(value) / 32767.0)
+
+            def on_R3_x_at_rest(self):
+                self.ry = 0.0
+
+            def on_R3_y_at_rest(self):
+                self.rx = 0.0
                 
             def on_disconnect(self):
                 self.running = False
