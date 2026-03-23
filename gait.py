@@ -89,6 +89,7 @@ class TripodGait(WalkingGait):
 
             # Move the leg
             leg.move_to_position(target_x, NEUTRAL_Y, target_z)
+            time.sleep(0.02)
 
     def walk_backward(self, stride_distance_cm=5):
         phase = self._get_phase()
@@ -127,6 +128,7 @@ class TripodGait(WalkingGait):
                 target_z = NEUTRAL_Z
 
             leg.move_to_position(target_x, NEUTRAL_Y, target_z)
+            time.sleep(0.02)
 
     def turn_left(self):
         logging.info(f"Turning left")
@@ -174,6 +176,7 @@ class TripodGait(WalkingGait):
                 target_z = NEUTRAL_Z
 
             leg.move_to_position(target_x, NEUTRAL_Y, target_z)
+            time.sleep(0.02)
 
     def turn_right(self):
         logging.info(f"Turning right")
@@ -218,6 +221,7 @@ class TripodGait(WalkingGait):
                 target_z = NEUTRAL_Z
 
             leg.move_to_position(target_x, NEUTRAL_Y, target_z)
+            time.sleep(0.02)
 
 
     def step_left(self):
@@ -243,6 +247,7 @@ class TripodGait(WalkingGait):
                 target_z = NEUTRAL_Z
 
             leg.move_to_position(NEUTRAL_X, target_y, target_z)
+            time.sleep(0.02)
 
     def step_right(self):
         phase = self._get_phase()
@@ -267,3 +272,5 @@ class TripodGait(WalkingGait):
                 target_z = NEUTRAL_Z
 
             leg.move_to_position(NEUTRAL_X, target_y, target_z)
+            time.sleep(0.02)
+
