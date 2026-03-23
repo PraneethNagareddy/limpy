@@ -131,7 +131,7 @@ class TripodGait(WalkingGait):
         logging.info(f"Turning left")
         phase = self._get_phase()
         
-        TURN_ANGLE = 15  # degrees
+        TURN_ANGLE = 30  # degrees
         TURN_RADIUS = 100 # approximate radius for legs in mm (10cm)
         TURN_LENGTH = TURN_RADIUS * math.radians(TURN_ANGLE)
         
@@ -178,7 +178,7 @@ class TripodGait(WalkingGait):
         logging.info(f"Turning right")
         phase = self._get_phase()
         
-        TURN_ANGLE = 15  # degrees
+        TURN_ANGLE = 30  # degrees
         TURN_RADIUS = 100 # approximate radius for legs in mm (10cm)
         TURN_LENGTH = TURN_RADIUS * math.radians(TURN_ANGLE)
         
