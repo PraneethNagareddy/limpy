@@ -108,7 +108,7 @@ class KeyboardController:
 
                 if x != 0.0 or y != 0.0:
                     logging.info("\\rArrows pressed X:%f, Y:%f", x, y)
-                    self.gait.walk_omni(x, y, stride_factor=0.5)
+                    self.gait.walk_omni(x, y, stride_factor=1)
                 else:
                     time.sleep(0.01)
                     
