@@ -7,6 +7,6 @@ To-Do:
 1. Add CAD designs 
 1. Add Items list and their links to buy 
 1. Add links for 
-    - Original link of CAD designs 
-    - Inverse Kinematics Explainer Video 
-    - IK Tester Tool
+    1. Original link of CAD designs 
+    1. Inverse Kinematics Explainer Video 
+    1. IK Tester Tool
