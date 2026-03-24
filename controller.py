@@ -17,6 +17,7 @@ class KeyboardController:
         import termios
         import tty
         import select
+        import os
         
         fd = sys.stdin.fileno()
         old_settings = termios.tcgetattr(fd)
@@ -24,30 +25,31 @@ class KeyboardController:
         try:
             tty.setraw(sys.stdin.fileno())
             while self.running:
+                # Wait for input with timeout
                 if select.select([sys.stdin], [], [], 0.05)[0]:
-                    ch = sys.stdin.read(1)
-                    if ch == '\x1b':
-                        if select.select([sys.stdin], [], [], 0.05)[0]:
-                            ch2 = sys.stdin.read(1)
-                            # Handle both standard escape sequences '\x1b[' and application cursors '\x1bO'
-                            if ch2 in ['[', 'O']:
-                                ch3 = sys.stdin.read(1)
+                    # Read available bytes (up to 32)
+                    data = os.read(fd, 32).decode('utf-8', 'ignore')
+                    
+                    self.keys_pressed.clear()
+                    i = 0
+                    while i < len(data):
+                        if data[i] == '\x1b':
+                            if i + 2 < len(data) and data[i+1] in ['[', 'O']:
+                                ch3 = data[i+2]
                                 if ch3 in ['A', 'B', 'C', 'D']:
-                                    key = '\x1b[' + ch3 # Normalize to bracket notation
-                                    self.keys_pressed.add(key)
-                                elif ch3 == '1' and ch2 == '[': 
-                                    # handle ctrl
-                                    ch4 = sys.stdin.read(1)
-                                    if ch4 == ';':
-                                        ch5 = sys.stdin.read(1)
-                                        if ch5 == '5':
-                                            ch6 = sys.stdin.read(1)
-                                            key = 'ctrl+' + ch6
-                                            self.keys_pressed.add(key)
-                    elif ch.lower() in ['q', 'a', 'd', 'z', 'c', '\x03']:
-                        self.keys_pressed.add(ch.lower())
+                                    self.keys_pressed.add('\x1b[' + ch3) # Normalize to standard bracket
+                                    i += 3
+                                    continue
+                                elif ch3 == '1' and i + 5 < len(data) and data[i+3:i+5] == ';5':
+                                    self.keys_pressed.add('ctrl+' + data[i+5])
+                                    i += 6
+                                    continue
+                        
+                        ch = data[i].lower()
+                        if ch in ['q', 'a', 'd', 'z', 'c', '\x03']:
+                            self.keys_pressed.add(ch)
+                        i += 1
                 else:
-                    # If nothing is pressed for 50ms, clear the buffer to stop walking
                     self.keys_pressed.clear()
                     
         finally:
@@ -57,7 +59,6 @@ class KeyboardController:
         self.running = True
         logging.info("Keyboard controller started. Use arrow keys to move. (Press 'q' or 'esc' to stop)")
         
-        # Start a thread to constantly read keys, allowing us to detect multiple keys or 'key up'
         self.reader_thread = threading.Thread(target=self._read_keys)
         self.reader_thread.start()
         
@@ -106,7 +107,6 @@ class KeyboardController:
                     y += 1.0
 
                 if x != 0.0 or y != 0.0:
-                    logging.info("X:%f , Y:%f", x, y)
                     self.gait.walk_omni(x, y, stride_factor=0.5)
                 else:
                     time.sleep(0.01)
@@ -146,13 +146,9 @@ class PS4Controller:
 
             def run_action(self):
                 while self.running:
-                    # Prioritize turning over walking if right joystick is engaged
                     if abs(self.rx) > 0.1 or abs(self.ry) > 0.1:
                         self.gait.turn_omni(self.rx, self.ry, turn_factor=1.0)
                     elif self.x != 0.0 or self.y != 0.0:
-                        # Assuming joystick throws max 32767 values, but pyPS4Controller maps them.
-                        # Normalizing to -1 to 1 based on pyPS4Controller max values (~32767)
-                        # We just send raw floats to walk_omni
                         self.gait.walk_omni(self.x, self.y, stride_factor=1.0)
                     else:
                         time.sleep(0.01)
