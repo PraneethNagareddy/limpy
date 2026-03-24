@@ -7,9 +7,9 @@ import threading
 import time
 
 class KeyboardController:
-    def __init__(self, gait: WalkingGait = TripodGait()):
-        self.spider = Spider.get()
-        self.gait = gait
+    def __init__(self, spider: Spider = None, gait: WalkingGait = None):
+        self.spider = spider
+        self.gait = gait if gait is not None else TripodGait(spider)
         self.running = False
         self.keys_pressed = set()
         

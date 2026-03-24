@@ -7,8 +7,8 @@ import math
 import logging
 
 class TripodGait(WalkingGait):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, spider: Spider = None):
+        super().__init__(spider)
         self.gait_start_time = None
 
     def _get_phase(self):

@@ -16,13 +16,8 @@ class ControllerManager:
         self.running = True
         self.__init_keyboard_controller()
 
-    @staticmethod
-    def __init_keyboard_controller():
+    def __init_keyboard_controller(self):
         logging.info("Initializing Keyboard Controller...")
-
-        # Initialize the controller with our spider instance
-        controller = KeyboardController()
-
         print("\n" + "=" * 50)
         print("ROBOT KEYBOARD CONTROLLER")
         print("=" * 50)
@@ -41,9 +36,9 @@ class ControllerManager:
 
         try:
             # Start listening for key presses
-            controller.start()
+            self.keyboard.start()
         except Exception as e:
             logging.error(f"Failed to start controller: {e}")
         finally:
-            controller.stop()
+            self.keyboard.stop()
             logging.info("Controller stopped.")

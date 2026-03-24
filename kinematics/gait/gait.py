@@ -1,10 +1,15 @@
-from core.spider import Spider
+import logging
 
+from core.spider import Spider
+import sys
 
 
 class WalkingGait:
-    def __init__(self):
-        self.spider = Spider.get()
+    def __init__(self, spider: Spider = None):
+        if spider is None:
+            logging.error("Cant initialize gait with null spider")
+            sys.exit(0)
+        self.spider = spider
 
     def walk_forward(self, stride_distance_cm=3):
         pass

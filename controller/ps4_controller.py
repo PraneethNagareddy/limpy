@@ -6,15 +6,15 @@ import threading
 import time
 
 class PS4Controller:
-    def __init__(self, gait: WalkingGait = TripodGait()):
+    def __init__(self, spider: Spider = None, gait: WalkingGait = None):
         try:
             from pyPS4Controller.controller import Controller
         except ImportError:
             logging.error("pyPS4Controller is not installed. Run `pip install pyPS4Controller`")
             return
 
-        self.spider = Spider.get()
-        self.gait = gait
+        self.spider = spider
+        self.gait = gait if gait is not None else TripodGait(spider)
 
         class MyController(Controller):
             def __init__(self, gait, **kwargs):
