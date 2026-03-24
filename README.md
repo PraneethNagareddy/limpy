@@ -3,4 +3,4 @@
 To-Do \
 Features \
 Gaits supported \
-Explain config \
+Explain config
