@@ -14,7 +14,7 @@ class Joint:
         self.KIT.servo[self.joint_config.channel].set_pulse_width_range(self.joint_config.pulse_width_min, self.joint_config.pulse_width_max)
 
     def turn(self, to_angle:float, await_completion=False, wait_time=None):
-        logging.info("Turning joint: %s to %s", self.joint_config.common_name, to_angle)
+        logging.debug("Turning joint: %s to %s", self.joint_config.common_name, to_angle)
         if (to_angle > self.joint_config.max_angle or
                 to_angle < self.joint_config.min_angle):
             logging.error("Angle for joint: %s out of range", self.joint_config.common_name)
@@ -58,10 +58,10 @@ class Joint:
                 sleep(wait_time)
 
     def stop(self):
-        logging.info("Stopping joint: %s", self.joint_config.common_name)
+        logging.debug("Stopping joint: %s", self.joint_config.common_name)
 
     def reset(self, await_completion=False, wait_time=None):
-        logging.info("Resetting joint: %s", self.joint_config.common_name)
+        logging.debug("Resetting joint: %s", self.joint_config.common_name)
         current_angle = 180 if self.get_current_angle() is None else self.get_current_angle()
         angle_delta = abs(current_angle - self.joint_config.default_angle)
         self.KIT.servo[self.joint_config.channel].angle = self.joint_config.default_angle
@@ -72,7 +72,7 @@ class Joint:
                 sleep(wait_time)
 
     def get_current_angle(self) -> float:
-        #logging.info("Angle value of joint: %s is %f", self.joint_config.common_name, self.KIT.servo[self.joint_config.channel].angle)
+        #logging.debug("Angle value of joint: %s is %f", self.joint_config.common_name, self.KIT.servo[self.joint_config.channel].angle)
         return self.KIT.servo[self.joint_config.channel].angle
 
     def validate_and_reset(self):

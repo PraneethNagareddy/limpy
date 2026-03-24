@@ -26,7 +26,7 @@ class Leg:
         pass
 
     def move_to_position(self, x_target, y_target, z_target, with_ease:bool = False):
-        logging.info("Moving %s to (%f, %f, %f)", self.config.position.name, x_target, y_target, z_target)
+        logging.debug("Moving %s to (%f, %f, %f)", self.config.position.name, x_target, y_target, z_target)
         # 1. Rotate Robot-Coordinates into Leg-Coordinates
         # This aligns 'Robot X' with the 'Leg's Swing Plane'
         angle_rad = math.radians(-self.config.mount_angle)  # Note the negative sign
