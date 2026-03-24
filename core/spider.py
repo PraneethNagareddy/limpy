@@ -52,7 +52,7 @@ class Spider:
         time.sleep(1)
         from controller.controller_manager import ControllerManager
         self.controller_manager = ControllerManager(spider=self)
-        self.controller_manager.start()  # Start the listener thread
+        self.controller_manager.start()
         logging.info("Spider started!")
 
 

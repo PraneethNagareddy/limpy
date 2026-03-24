@@ -14,7 +14,8 @@ class ControllerManager:
 
     def start(self):
         self.running = True
-        self.__init_keyboard_controller()
+        threading.Thread(target=self.__init_keyboard_controller, daemon=True).start()
+        threading.Thread(target=self.__init_ps4_controller, daemon=True).start()
 
     def __init_keyboard_controller(self):
         logging.info("Initializing Keyboard Controller...")
@@ -42,3 +43,7 @@ class ControllerManager:
         finally:
             self.keyboard.stop()
             logging.info("Controller stopped.")
+
+    def __init_ps4_controller(self):
+        logging.info("Skipping ps4 Controller initialization...")
+        pass
