@@ -70,6 +70,7 @@ class TripodGait(WalkingGait):
             is_rear_leg = leg_id in REAR_LEGS_GROUP
 
             # Calculate actual stride based on joystick input and drift compensation
+            # Note: based on IK, X is forward/backward and Y is left/right.
             current_step_x = STEP_LENGTH * x * stride_factor
             current_step_y = STEP_LENGTH * y * stride_factor
             
@@ -151,22 +152,22 @@ class TripodGait(WalkingGait):
                 s_phase = leg_phase * 2
                 
                 if move_forward:
-                    target_y = NEUTRAL_Y - (math.cos(s_phase * math.pi) * (TURN_LENGTH / 2))
+                    target_x = NEUTRAL_X - (math.cos(s_phase * math.pi) * (TURN_LENGTH / 2))
                 else:
-                    target_y = NEUTRAL_Y + (math.cos(s_phase * math.pi) * (TURN_LENGTH / 2))
+                    target_x = NEUTRAL_X + (math.cos(s_phase * math.pi) * (TURN_LENGTH / 2))
                     
                 target_z = NEUTRAL_Z + (math.sin(s_phase * math.pi) * STEP_HEIGHT)
             else:
                 s_phase = (leg_phase - 0.5) * 2
                 
                 if move_forward:
-                    target_y = NEUTRAL_Y + (TURN_LENGTH / 2) - (s_phase * TURN_LENGTH)
+                    target_x = NEUTRAL_X + (TURN_LENGTH / 2) - (s_phase * TURN_LENGTH)
                 else:
-                    target_y = NEUTRAL_Y - (TURN_LENGTH / 2) + (s_phase * TURN_LENGTH)
+                    target_x = NEUTRAL_X - (TURN_LENGTH / 2) + (s_phase * TURN_LENGTH)
                     
                 target_z = NEUTRAL_Z
 
-            leg.move_to_position(NEUTRAL_X, target_y, target_z)
+            leg.move_to_position(target_x, NEUTRAL_Y, target_z)
 
     def walk_forward(self, stride_distance_cm=5):
         # Code to move three legs off ground at once
@@ -275,11 +276,11 @@ class TripodGait(WalkingGait):
                 s_phase = leg_phase * 2
                 
                 if move_forward:
-                    # Moving forward: Y from -half to +half for arc
-                    target_y = NEUTRAL_Y - (math.cos(s_phase * math.pi) * (TURN_LENGTH / 2))
+                    # Moving forward: X from -half to +half
+                    target_x = NEUTRAL_X - (math.cos(s_phase * math.pi) * (TURN_LENGTH / 2))
                 else:
-                    # Moving backward: Y from +half to -half for arc
-                    target_y = NEUTRAL_Y + (math.cos(s_phase * math.pi) * (TURN_LENGTH / 2))
+                    # Moving backward: X from +half to -half
+                    target_x = NEUTRAL_X + (math.cos(s_phase * math.pi) * (TURN_LENGTH / 2))
                     
                 target_z = NEUTRAL_Z + (math.sin(s_phase * math.pi) * STEP_HEIGHT)
             else:
@@ -287,13 +288,13 @@ class TripodGait(WalkingGait):
                 
                 if move_forward:
                     # Stance pushing body backward relative to leg (leg moves backward)
-                    target_y = NEUTRAL_Y + (TURN_LENGTH / 2) - (s_phase * TURN_LENGTH)
+                    target_x = NEUTRAL_X + (TURN_LENGTH / 2) - (s_phase * TURN_LENGTH)
                 else:
-                    target_y = NEUTRAL_Y - (TURN_LENGTH / 2) + (s_phase * TURN_LENGTH)
+                    target_x = NEUTRAL_X - (TURN_LENGTH / 2) + (s_phase * TURN_LENGTH)
                     
                 target_z = NEUTRAL_Z
 
-            leg.move_to_position(NEUTRAL_X, target_y, target_z)
+            leg.move_to_position(target_x, NEUTRAL_Y, target_z)
 
     def turn_right(self):
         logging.info(f"Turning right")
@@ -318,22 +319,22 @@ class TripodGait(WalkingGait):
                 s_phase = leg_phase * 2
                 
                 if move_forward:
-                    target_y = NEUTRAL_Y - (math.cos(s_phase * math.pi) * (TURN_LENGTH / 2))
+                    target_x = NEUTRAL_X - (math.cos(s_phase * math.pi) * (TURN_LENGTH / 2))
                 else:
-                    target_y = NEUTRAL_Y + (math.cos(s_phase * math.pi) * (TURN_LENGTH / 2))
+                    target_x = NEUTRAL_X + (math.cos(s_phase * math.pi) * (TURN_LENGTH / 2))
                     
                 target_z = NEUTRAL_Z + (math.sin(s_phase * math.pi) * STEP_HEIGHT)
             else:
                 s_phase = (leg_phase - 0.5) * 2
                 
                 if move_forward:
-                    target_y = NEUTRAL_Y + (TURN_LENGTH / 2) - (s_phase * TURN_LENGTH)
+                    target_x = NEUTRAL_X + (TURN_LENGTH / 2) - (s_phase * TURN_LENGTH)
                 else:
-                    target_y = NEUTRAL_Y - (TURN_LENGTH / 2) + (s_phase * TURN_LENGTH)
+                    target_x = NEUTRAL_X - (TURN_LENGTH / 2) + (s_phase * TURN_LENGTH)
                     
                 target_z = NEUTRAL_Z
 
-            leg.move_to_position(NEUTRAL_X, target_y, target_z)
+            leg.move_to_position(target_x, NEUTRAL_Y, target_z)
 
 
     def step_left(self):

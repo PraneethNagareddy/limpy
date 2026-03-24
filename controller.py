@@ -29,12 +29,13 @@ class KeyboardController:
                     if ch == '\x1b':
                         if select.select([sys.stdin], [], [], 0.05)[0]:
                             ch2 = sys.stdin.read(1)
-                            if ch2 == '[':
+                            # Handle both standard escape sequences '\x1b[' and application cursors '\x1bO'
+                            if ch2 in ['[', 'O']:
                                 ch3 = sys.stdin.read(1)
                                 if ch3 in ['A', 'B', 'C', 'D']:
-                                    key = '\x1b[' + ch3
+                                    key = '\x1b[' + ch3 # Normalize to bracket notation
                                     self.keys_pressed.add(key)
-                                elif ch3 == '1': 
+                                elif ch3 == '1' and ch2 == '[': 
                                     # handle ctrl
                                     ch4 = sys.stdin.read(1)
                                     if ch4 == ';':
@@ -175,22 +176,22 @@ class PS4Controller:
                 self.y = 0.0
                 
             def on_R3_left(self, value):
-                self.rx = -(abs(value) / 32767.0)
+                self.ry = -(abs(value) / 32767.0)
                 
             def on_R3_right(self, value):
-                self.rx = abs(value) / 32767.0
-                
-            def on_R3_up(self, value):
                 self.ry = abs(value) / 32767.0
                 
+            def on_R3_up(self, value):
+                self.rx = abs(value) / 32767.0
+                
             def on_R3_down(self, value):
-                self.ry = -(abs(value) / 32767.0)
+                self.rx = -(abs(value) / 32767.0)
 
             def on_R3_x_at_rest(self):
-                self.rx = 0.0
+                self.ry = 0.0
 
             def on_R3_y_at_rest(self):
-                self.ry = 0.0
+                self.rx = 0.0
                 
             def on_disconnect(self):
                 self.running = False
