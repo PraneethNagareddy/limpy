@@ -1,0 +1,8 @@
+# Hardware interaction and Servo Control (PCA9685)
+ adafruit-circuitpython-servokit
+​
+ # PS4 Controller Support
+ pyPS4Controller
+​
+ # GPIO library for Raspberry Pi 
+ RPi.GPIO
