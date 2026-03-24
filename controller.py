@@ -174,22 +174,22 @@ class PS4Controller:
                 self.y = 0.0
                 
             def on_R3_left(self, value):
-                self.ry = -(abs(value) / 32767.0)
+                self.rx = -(abs(value) / 32767.0)
                 
             def on_R3_right(self, value):
-                self.ry = abs(value) / 32767.0
-                
-            def on_R3_up(self, value):
                 self.rx = abs(value) / 32767.0
                 
+            def on_R3_up(self, value):
+                self.ry = abs(value) / 32767.0
+                
             def on_R3_down(self, value):
-                self.rx = -(abs(value) / 32767.0)
+                self.ry = -(abs(value) / 32767.0)
 
             def on_R3_x_at_rest(self):
-                self.ry = 0.0
+                self.rx = 0.0
 
             def on_R3_y_at_rest(self):
-                self.rx = 0.0
+                self.ry = 0.0
                 
             def on_disconnect(self):
                 self.running = False
