@@ -72,21 +72,21 @@ class KeyboardController:
 
                 # Handle discrete turns (mapped to 'a' and 'd')
                 if 'a' in self.keys_pressed:
-                    logging.info("'a' Pressed (Turn Left)")
+                    logging.info("\\r'a' Pressed (Turn Left)")
                     self.gait.turn_left()
                     continue
                 if 'd' in self.keys_pressed:
-                    logging.info("'d' Pressed (Turn Right)")
+                    logging.info("\\r'd' Pressed (Turn Right)")
                     self.gait.turn_right()
                     continue
 
                 # Handle step left and step right (mapped to 'z' and 'c')
                 if 'z' in self.keys_pressed:
-                    logging.info("'z' Pressed (Step Left)")
+                    logging.info("\\r'z' Pressed (Step Left)")
                     self.gait.step_left()
                     continue
                 if 'c' in self.keys_pressed:
-                    logging.info("'c' Pressed (Step Right)")
+                    logging.info("\\r'c' Pressed (Step Right)")
                     self.gait.step_right()
                     continue
 
@@ -107,6 +107,7 @@ class KeyboardController:
                     y += 1.0
 
                 if x != 0.0 or y != 0.0:
+                    logging.info("\\rArrows pressed X:%f, Y:%f", x, y)
                     self.gait.walk_omni(x, y, stride_factor=0.5)
                 else:
                     time.sleep(0.01)
