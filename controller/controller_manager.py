@@ -17,6 +17,7 @@ class ControllerManager:
         threading.Thread(target=self.__init_ps4_controller, daemon=True).start()
         self.__init_keyboard_controller()
 
+
     def __init_keyboard_controller(self):
         logging.info("Initializing Keyboard Controller...")
         print("\n" + "=" * 50)
