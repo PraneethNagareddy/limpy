@@ -1,6 +1,6 @@
 # Hexapod Spider robot
 
-To-Do
-Features
-Gaits supported
-Explain config
+To-Do \n
+Features \n
+Gaits supported \n
+Explain config \n
