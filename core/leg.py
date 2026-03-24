@@ -1,9 +1,9 @@
-from config import *
-from joint_utils import move_joint_with_sine_easing as turn_joints_ease
-from leg_config import LegConfig
-from enums import Legs
-from joint import Joint
-from inverse_kinematics import IK
+from constants import *
+from hardware.utils.joint_utils import move_joint_with_sine_easing as turn_joints_ease
+from core.config.leg_config import LegConfig
+from types import Legs
+from hardware.joint import Joint
+from kinematics.inverse_kinematics import IK
 import logging
 import math
 

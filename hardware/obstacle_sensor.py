@@ -1,7 +1,7 @@
 import logging
 import threading
 
-from obstacle_sensor_config import ObstacleSensorConfig
+from hardware.config.obstacle_sensor_config import ObstacleSensorConfig
 import RPi.GPIO as GPIO         #imports modules required in program
 import time                     #time module is used to add delays
 

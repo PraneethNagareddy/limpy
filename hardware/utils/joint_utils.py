@@ -1,6 +1,5 @@
 import math
 
-from servo_kit_factory import ServoKitFactory
 from time import sleep
 
 def turn_and_await(joint, angle):

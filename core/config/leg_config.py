@@ -1,4 +1,4 @@
-from enums import Legs
+from types import Legs
 
 class LegConfig:
     def __init__(self,

@@ -1,8 +1,6 @@
 import logging
-from driver import spider
-from controller import KeyboardController
-import sys
-import atexit
+from core.builder import spider
+from controllers.keyboard_controller import KeyboardController
 
 # Configure logging to see what's happening
 logging.basicConfig(level=logging.INFO, format='\r%(asctime)s - %(levelname)s - %(message)s\r')

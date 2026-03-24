@@ -1,4 +1,4 @@
-from enums import DistanceUnit
+from types import DistanceUnit
 
 
 class ObstacleSensorConfig:

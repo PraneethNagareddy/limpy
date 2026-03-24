@@ -1,8 +1,4 @@
-import time
-import math
-from terminaltables import AsciiTable  # Optional, for clean UI
-from driver import *
-from inverse_kinematics import *
+from kinematics.inverse_kinematics import *
 
 # --- START CALIBRATION VALUES ---
 FEMUR = 60.0  # Try 58.0 or 62.0 if arcing

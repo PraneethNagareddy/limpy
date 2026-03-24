@@ -1,46 +1,14 @@
-from spider import Spider
-from config import *
-from inverse_kinematics import IK
-from enums import Legs
+from core.spider import Spider
+from constants import *
+from gait import WalkingGait
 
 import time
 import math
 import logging
 
-
-class WalkingGait:
-    def __init__(self, spider: Spider):
-        self.spider = spider
-        self.start_time = time.time()
-
-    def walk_forward(self, stride_distance_cm=3):
-        pass
-
-    def walk_backward(self, stride_distance_cm=3):
-        pass
-
-    def turn_left(self):
-        pass
-
-    def turn_right(self):
-        pass
-
-    def step_left(self):
-        pass
-
-    def step_right(self):
-        pass
-
-    def walk_omni(self, x: float, y: float, stride_factor: float = 1.0):
-        pass
-
-    def turn_omni(self, rx: float, ry: float, turn_factor: float = 1.0):
-        pass
-
-
 class TripodGait(WalkingGait):
-    def __init__(self, spider: Spider):
-        super().__init__(spider)
+    def __init__(self):
+        super().__init__()
         self.gait_start_time = None
 
     def _get_phase(self):

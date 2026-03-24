@@ -1,7 +1,7 @@
 import logging
 import math
 from typing import Tuple
-from config import FEMUR_LENGTH_MM, TIBIA_LENGTH_MM, COXA_LENGTH_MM, COXA_Z_OFFSET_MM, FEMUR_Z_OFFSET_MM
+from constants import FEMUR_LENGTH_MM, TIBIA_LENGTH_MM, COXA_LENGTH_MM, COXA_Z_OFFSET_MM, FEMUR_Z_OFFSET_MM
 
 
 class IK:
