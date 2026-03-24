@@ -13,7 +13,7 @@ from enums import Legs
 
 logging.basicConfig(
     level=logging.INFO,  # Set the minimum level to log (INFO, DEBUG, etc.)
-    format='%(asctime)s - %(levelname)s - %(message)s',
+    format='\r%(asctime)s - %(levelname)s - %(message)s\r\n',
 )
 
 front_left_hip_config = JointConfig("TowerPro MG90S", "Positional", "Front Left Hip", channel=2, i2c_address=0x41)

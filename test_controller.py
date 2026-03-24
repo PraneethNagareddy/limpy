@@ -5,7 +5,7 @@ import sys
 import atexit
 
 # Configure logging to see what's happening
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s\n')
+logging.basicConfig(level=logging.INFO, format='\r%(asctime)s - %(levelname)s - %(message)s\r\n')
 
 def main():
     logging.info("Initializing Keyboard Controller...")
