@@ -1,4 +1,4 @@
-from types import DistanceUnit
+from type import DistanceUnit
 
 
 class ObstacleSensorConfig:

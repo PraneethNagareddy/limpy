@@ -1,6 +1,6 @@
 import math
 
-from servo_kit_factory import ServoKitFactory
+from hardware.servo_kit_factory import ServoKitFactory
 from hardware.config.joint_config import JointConfig
 from time import sleep
 import logging

@@ -50,10 +50,11 @@ class Spider:
             leg.move_to_position(X, Y, Z)
 
         time.sleep(1)
+        logging.info("Spider started!")
+        logging.info("Starting controllers")
         from controller.controller_manager import ControllerManager
         self.controller_manager = ControllerManager(spider=self)
         self.controller_manager.start()
-        logging.info("Spider started!")
 
 
     def shutdown(self):

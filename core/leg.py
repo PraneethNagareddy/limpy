@@ -1,7 +1,7 @@
 from constants import *
 from hardware.utils.joint_utils import move_joint_with_sine_easing as turn_joints_ease
 from core.config.leg_config import LegConfig
-from types import Legs
+from type import Legs
 from hardware.joint import Joint
 from kinematics.inverse_kinematics import IK
 import logging

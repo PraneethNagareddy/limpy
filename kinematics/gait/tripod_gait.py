@@ -1,6 +1,6 @@
 from core.spider import Spider
 from constants import *
-from gait import WalkingGait
+from kinematics.gait.gait import WalkingGait
 
 import time
 import math
