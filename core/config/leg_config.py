@@ -1,4 +1,4 @@
-from types import Legs
+from type import Legs
 
 class LegConfig:
     def __init__(self,

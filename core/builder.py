@@ -5,7 +5,7 @@ from hardware.joint import Joint
 from hardware.config.joint_config import JointConfig
 from hardware.obstacle_sensor import ObstacleSensor
 from hardware.config.obstacle_sensor_config import ObstacleSensorConfig
-from types import Legs
+from type import Legs
 
 class SpiderBuilder:
     def __init__(self):
