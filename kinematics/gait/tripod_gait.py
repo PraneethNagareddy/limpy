@@ -25,6 +25,7 @@ class TripodGait(WalkingGait):
         # If no movement is requested, smoothly return to neutral stance
         if abs(x) < 0.1 and abs(y) < 0.1:
             self.return_to_neutral_stance()
+            self.gait_start_time = None
             return
 
         magnitude = math.sqrt(x ** 2 + y ** 2)
@@ -88,7 +89,7 @@ class TripodGait(WalkingGait):
         logging.info("Returning to neutral stance.")
         (target_x, target_y, target_z) = INIT_COORDINATES
         for leg in self.spider.legs:
-            leg.move_to_position(target_x, target_y, target_z, with_ease=True) # Use with_ease for smooth transition
+            leg.move_to_position(target_x, target_y, target_z, with_ease=False) # Use with_ease for smooth transition
 
     def turn_omni(self, rx: float, ry: float, turn_factor: float = 1.0):
         # Only turn if joystick is actively being pressed beyond a deadzone
