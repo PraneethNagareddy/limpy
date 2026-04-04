@@ -61,7 +61,7 @@ class TripodGait(WalkingGait):
                 if is_rear_leg:
                     # Inverting logic for rear legs as per original logic
                     offset_x = (current_step_x / 2) - (s_phase * current_step_x)
-                    offset_y = (current_step_y / 2) - (s_phase * current_step_y)
+                    #offset_y = (current_step_y / 2) - (s_phase * current_step_y)
 
                 target_x = NEUTRAL_X + offset_x
                 target_y = NEUTRAL_Y + offset_y
@@ -76,7 +76,7 @@ class TripodGait(WalkingGait):
 
                 if is_rear_leg:
                     offset_x = -(current_step_x / 2) + (s_phase * current_step_x)
-                    offset_y = -(current_step_y / 2) + (s_phase * current_step_y)
+                    #offset_y = -(current_step_y / 2) + (s_phase * current_step_y)
 
                 target_x = NEUTRAL_X + offset_x
                 target_y = NEUTRAL_Y + offset_y
