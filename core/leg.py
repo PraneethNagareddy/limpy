@@ -13,6 +13,9 @@ class Leg:
         self.knee_joint = knee_joint
         self.ankle_joint = ankle_joint
         self.config = config
+        self.current_x = 0.0
+        self.current_y = 0.0
+        self.current_z = 0.0
 
 
     def terminate(self):
@@ -46,11 +49,14 @@ class Leg:
         self.knee_joint.validate_and_reset()
         self.ankle_joint.validate_and_reset()
         if with_ease:
-            turn_joints_ease([(self.hip_joint, self.hip_joint.get_current_angle(), hip_angle), (self.hip_joint, self.hip_joint.get_current_angle(), hip_angle), (self.hip_joint, self.hip_joint.get_current_angle(), hip_angle)], duration_sec=0.5)
+            turn_joints_ease([(self.hip_joint, self.hip_joint.get_current_angle(), hip_angle), (self.ankle_joint, self.ankle_joint.get_current_angle(), ankle_angle), (self.knee_joint, self.knee_joint.get_current_angle(), knee_angle)], duration_sec=0.5)
         else:
             self.hip_joint.turn(hip_angle, await_completion=False, wait_time=0.02)
             self.knee_joint.turn(knee_angle, await_completion=False, wait_time=0.02)
             self.ankle_joint.turn(ankle_angle, await_completion=False, wait_time=0.02)
+        self.current_x = x_target
+        self.current_y = y_target
+        self.current_z = z_target
 
     def move_to_stable_position(self):
         self.hip_joint.turn(to_angle=HIP_JOINT_STEP_ANGLE_FRONT, await_completion=False)
