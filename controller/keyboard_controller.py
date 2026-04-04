@@ -12,6 +12,8 @@ class KeyboardController:
         self.gait = gait if gait is not None else TripodGait(spider)
         self.running = False
         self.keys_pressed = set()
+        self.was_moving = False
+        self.last_move_time = 0.0
         
     def _read_keys(self):
         """Reads keypresses in a separate thread"""
@@ -65,6 +67,8 @@ class KeyboardController:
         
         while self.running:
             try:
+                current_time = time.time()
+
                 # Handle Exit
                 if 'q' in self.keys_pressed or '\x03' in self.keys_pressed:
                     logging.info("Exit key pressed.")
@@ -75,20 +79,28 @@ class KeyboardController:
                 if 'a' in self.keys_pressed:
                     logging.info("\\r'a' Pressed (Turn Left)")
                     self.gait.turn_left()
+                    self.was_moving = True
+                    self.last_move_time = current_time
                     continue
                 if 'd' in self.keys_pressed:
                     logging.info("\\r'd' Pressed (Turn Right)")
                     self.gait.turn_right()
+                    self.was_moving = True
+                    self.last_move_time = current_time
                     continue
 
                 # Handle step left and step right (mapped to 'z' and 'c')
                 if 'z' in self.keys_pressed:
                     logging.info("\\r'z' Pressed (Step Left)")
                     self.gait.step_left()
+                    self.was_moving = True
+                    self.last_move_time = current_time
                     continue
                 if 'c' in self.keys_pressed:
                     logging.info("\\r'c' Pressed (Step Right)")
                     self.gait.step_right()
+                    self.was_moving = True
+                    self.last_move_time = current_time
                     continue
 
                 # Handle continuous omni directional walking
@@ -110,8 +122,14 @@ class KeyboardController:
                 if x != 0.0 or y != 0.0:
                     logging.info("\\rArrows pressed X:%f, Y:%f", x, y)
                     self.gait.walk_omni(x, y, stride_factor=1)
+                    self.was_moving = True
+                    self.last_move_time = current_time
                 else:
-                    self.gait.walk_omni(0.0, 0.0, stride_factor=1)
+                    if self.was_moving and (current_time - self.last_move_time > 0.25):
+                        logging.info("Movement stopped. Returning to neutral stance.")
+                        self.gait.walk_omni(0.0, 0.0, stride_factor=1)
+                        self.was_moving = False
+
                     time.sleep(0.01)
                     
             except Exception as e:
