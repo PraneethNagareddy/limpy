@@ -73,6 +73,31 @@ class Spider:
         logging.info("Spider shutdown!")
 
     def hibernate(self):
-        for leg in self.legs:
-            leg.rest()
+        self.return_to_neutral_smoothly()
         logging.info("Spider in hibernate!")
+
+    def return_to_neutral_smoothly(self, steps=15, step_delay=0.015):
+        """Gradually moves all legs from their current positions to INIT_COORDINATES."""
+        target_x, target_y, target_z = INIT_COORDINATES
+
+        # Capture the starting positions for all legs before we begin moving
+        start_positions = []
+        for leg in self.legs:
+            start_positions.append((leg.current_x, leg.current_y, leg.current_z))
+
+        # Interpolate over the specified number of steps
+        for step in range(1, steps + 1):
+            t = step / steps  # Gives a value from 0.0 to 1.0
+
+            for i, leg in enumerate(self.legs):
+                start_x, start_y, start_z = start_positions[i]
+
+                # Calculate the intermediate position (Lerp)
+                inter_x = start_x + (target_x - start_x) * t
+                inter_y = start_y + (target_y - start_y) * t
+                inter_z = start_z + (target_z - start_z) * t
+
+                leg.move_to_position(inter_x, inter_y, inter_z)
+
+            # Short pause to let servos physically reach the intermediate spot
+            time.sleep(step_delay)
