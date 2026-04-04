@@ -54,14 +54,14 @@ class TripodGait(WalkingGait):
             if leg_phase < 0.5:
                 s_phase = leg_phase * 2
 
-                # Swing Phase: move smoothly from negative offset to positive offset
-                offset_x = -(math.cos(s_phase * math.pi) * (current_step_x / 2))
-                offset_y = -(math.cos(s_phase * math.pi) * (current_step_y / 2))
+                # Swing Phase (Linear X/Y): move linearly from negative offset to positive offset
+                offset_x = -(current_step_x / 2) + (s_phase * current_step_x)
+                offset_y = -(current_step_y / 2) + (s_phase * current_step_y)
 
                 if is_rear_leg:
                     # Inverting logic for rear legs as per original logic
-                    offset_x = (math.cos(s_phase * math.pi) * (current_step_x / 2))
-                    offset_y = (math.cos(s_phase * math.pi) * (current_step_y / 2))
+                    offset_x = (current_step_x / 2) - (s_phase * current_step_x)
+                    offset_y = (current_step_y / 2) - (s_phase * current_step_y)
 
                 target_x = NEUTRAL_X + offset_x
                 target_y = NEUTRAL_Y + offset_y
