@@ -49,19 +49,21 @@ class Spider:
         (target_x, target_y, target_z) = INIT_COORDINATES
 
         # We start from a safe retracted position and rise up to the standing height
-        # Assuming current height is near 0 or -10
+        # Assuming current height is near 0 or -10 (folded position)
         start_z = -10
-        steps = 30
+        interpolation_steps = 50
 
-        for i in range(steps + 1):
-            current_z = start_z + (target_z - start_z) * (i / steps)
+        # Step 1: Rise up smoothly to target Z height
+        for i in range(interpolation_steps + 1):
+            current_z = start_z + (target_z - start_z) * (i / interpolation_steps)
             for leg in self.legs:
                 leg.move_to_position(target_x, target_y, current_z)
-            time.sleep(0.01)
+            time.sleep(0.02) # Controlled speed for the rise
 
         time.sleep(0.5)
         logging.info("Spider started and standing!")
-        logging.info("Starting controllers")
+        
+        logging.info("Starting controllers...")
         from controller.controller_manager import ControllerManager
         self.controller_manager = ControllerManager(spider=self)
         self.controller_manager.start()
