@@ -118,6 +118,37 @@ class TripodGait(WalkingGait):
 
         self.gait_start_time = None
 
+    def sit_down_smoothly(self, steps=20, step_delay=0.03):
+        """Gradually lowers the robot's belly to the ground by raising the feet."""
+        target_x, target_y, _ = INIT_COORDINATES
+
+        # The Z value that puts the belly on the floor.
+        # You may need to tweak this (e.g., 0, 10, or 20) depending on your hardware.
+        REST_Z = 10
+
+        start_positions = []
+        for leg in self.spider.legs:
+            start_positions.append((leg.current_x, leg.current_y, leg.current_z))
+
+        for step in range(1, steps + 1):
+            t = step / steps
+
+            for i, leg in enumerate(self.spider.legs):
+                start_x, start_y, start_z = start_positions[i]
+
+                # Move to neutral X/Y for a stable base, while interpolating Z to the REST_Z
+                inter_x = start_x + (target_x - start_x) * t
+                inter_y = start_y + (target_y - start_y) * t
+                inter_z = start_z + (REST_Z - start_z) * t
+
+                leg.move_to_position(inter_x, inter_y, inter_z)
+
+            time.sleep(step_delay)
+
+        # Optional: If your servo library/hardware class has a method to cut torque/power,
+        # call it here so the servos don't buzz while resting on the floor.
+        # e.g., self.spider.disable_all_servos()
+
     def turn_omni(self, rx: float, ry: float, turn_factor: float = 1.0):
         # Only turn if joystick is actively being pressed beyond a deadzone
         magnitude = math.sqrt(rx ** 2 + ry ** 2)

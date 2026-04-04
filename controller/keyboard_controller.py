@@ -71,7 +71,14 @@ class KeyboardController:
 
                 # Handle Exit
                 if 'q' in self.keys_pressed or '\x03' in self.keys_pressed:
-                    logging.info("Exit key pressed.")
+                    logging.info("Exit key pressed. Initiating smooth shutdown sequence...")
+
+                    # 1. First, make sure we aren't mid-stride by returning to neutral
+                    self.gait.return_to_neutral_smoothly()
+
+                    # 2. Lower the belly to the ground
+                    self.gait.sit_down_smoothly()
+
                     self.stop()
                     break
 

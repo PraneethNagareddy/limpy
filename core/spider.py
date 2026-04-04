@@ -73,6 +73,5 @@ class Spider:
         logging.info("Spider shutdown!")
 
     def hibernate(self):
-        for leg in self.legs:
-            leg.rest()
+
         logging.info("Spider in hibernate!")
