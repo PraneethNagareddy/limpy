@@ -111,7 +111,6 @@ class KeyboardController:
                     logging.info("\\rArrows pressed X:%f, Y:%f", x, y)
                     self.gait.walk_omni(x, y, stride_factor=1)
                 else:
-                    self.gait.walk_omni(0.0, 0.0, stride_factor=1)
                     time.sleep(0.01)
                     
             except Exception as e:
