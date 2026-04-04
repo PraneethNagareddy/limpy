@@ -125,7 +125,7 @@ class KeyboardController:
                     self.was_moving = True
                     self.last_move_time = current_time
                 else:
-                    if self.was_moving and (current_time - self.last_move_time > 0.25):
+                    if self.was_moving and (current_time - self.last_move_time > 0.99):
                         logging.info("Movement stopped. Returning to neutral stance.")
                         self.gait.walk_omni(0.0, 0.0, stride_factor=1)
                         self.was_moving = False
