@@ -15,31 +15,48 @@ class SpiderBuilder:
         self.LEFT_ADDR = 0x41
         self.RIGHT_ADDR = 0x40
 
-    def _create_leg(self, side_addr, position, channels, mount_angle=45, inverse_hip=False, hip_trim=0):
-        """Helper to reduce repetitive Joint and Leg instantiation."""
-        hip_cfg = JointConfig("MG995/996R", "Positional", f"{position.name} Hip", channel=channels[0], i2c_address=side_addr)
-        knee_cfg = JointConfig("MG995/996R", "Positional", f"{position.name} Knee", channel=channels[1], i2c_address=side_addr)
-        ankle_cfg = JointConfig("MG995/996R", "Positional", f"{position.name} Ankle", channel=channels[2], i2c_address=side_addr)
-
-        leg_cfg = LegConfig(
-            mount_angle=mount_angle, 
-            position=position, 
-            inverse_hip=inverse_hip, 
-            hip_trim_angle=hip_trim
-        )
-
-        return Leg(Joint(hip_cfg), Joint(knee_cfg), Joint(ankle_cfg), leg_cfg)
-
     def build_legs(self):
-        # Left Side (0x41) - Note the 'inverse_hip=True' for the whole side
-        self.legs['FL'] = self._create_leg(self.LEFT_ADDR, Legs.FRONT_LEFT, [2, 7, 15], inverse_hip=True, hip_trim=-5)
-        self.legs['ML'] = self._create_leg(self.LEFT_ADDR, Legs.MIDDLE_LEFT, [14, 8, 6], inverse_hip=True, hip_trim=7)
-        self.legs['RL'] = self._create_leg(self.LEFT_ADDR, Legs.REAR_LEFT, [13, 5, 0], inverse_hip=True, hip_trim=9)
+        # Front Left Leg
+        fl_hip_cfg = JointConfig("MG995/996R", "Positional", "Front Left Hip", channel=3, i2c_address=self.LEFT_ADDR)
+        fl_knee_cfg = JointConfig("MG995/996R", "Positional", "Front Left Knee", channel=11, i2c_address=self.RIGHT_ADDR)
+        fl_ankle_cfg = JointConfig("MG995/996R", "Positional", "Front Left Ankle", channel=15, i2c_address=self.RIGHT_ADDR)
+        self.legs['FL'] = Leg(Joint(fl_hip_cfg), Joint(fl_knee_cfg), Joint(fl_ankle_cfg), 
+                              LegConfig(mount_angle=45, position=Legs.FRONT_LEFT, inverse_hip=True, hip_trim_angle=-5))
 
-        # Right Side (0x40)
-        self.legs['FR'] = self._create_leg(self.RIGHT_ADDR, Legs.FRONT_RIGHT, [14, 12, 0])
-        self.legs['MR'] = self._create_leg(self.RIGHT_ADDR, Legs.MIDDLE_RIGHT, [5, 8, 4], hip_trim=-7)
-        self.legs['RR'] = self._create_leg(self.RIGHT_ADDR, Legs.REAR_RIGHT, [3, 7, 15], hip_trim=-15)
+        # Middle Left Leg
+        ml_hip_cfg = JointConfig("MG995/996R", "Positional", "Middle Left Hip", channel=2, i2c_address=self.RIGHT_ADDR)
+        ml_knee_cfg = JointConfig("MG995/996R", "Positional", "Middle Left Knee", channel=4, i2c_address=self.RIGHT_ADDR)
+        ml_ankle_cfg = JointConfig("MG995/996R", "Positional", "Middle Left Ankle", channel=5, i2c_address=self.LEFT_ADDR)
+        self.legs['ML'] = Leg(Joint(ml_hip_cfg), Joint(ml_knee_cfg), Joint(ml_ankle_cfg), 
+                              LegConfig(mount_angle=45, position=Legs.MIDDLE_LEFT, inverse_hip=True, hip_trim_angle=7))
+
+        # Rear Left Leg
+        rl_hip_cfg = JointConfig("MG995/996R", "Positional", "Rear Left Hip", channel=8, i2c_address=self.LEFT_ADDR)
+        rl_knee_cfg = JointConfig("MG995/996R", "Positional", "Rear Left Knee", channel=1, i2c_address=self.RIGHT_ADDR)
+        rl_ankle_cfg = JointConfig("MG995/996R", "Positional", "Rear Left Ankle", channel=0, i2c_address=self.RIGHT_ADDR)
+        self.legs['RL'] = Leg(Joint(rl_hip_cfg), Joint(rl_knee_cfg), Joint(rl_ankle_cfg), 
+                              LegConfig(mount_angle=45, position=Legs.REAR_LEFT, inverse_hip=True, hip_trim_angle=9))
+
+        # Front Right Leg
+        fr_hip_cfg = JointConfig("MG995/996R", "Positional", "Front Right Hip", channel=3, i2c_address=self.RIGHT_ADDR)
+        fr_knee_cfg = JointConfig("MG995/996R", "Positional", "Front Right Knee", channel=1, i2c_address=self.LEFT_ADDR)
+        fr_ankle_cfg = JointConfig("MG995/996R", "Positional", "Front Right Ankle", channel=14, i2c_address=self.RIGHT_ADDR)
+        self.legs['FR'] = Leg(Joint(fr_hip_cfg), Joint(fr_knee_cfg), Joint(fr_ankle_cfg), 
+                              LegConfig(mount_angle=45, position=Legs.FRONT_RIGHT))
+
+        # Middle Right Leg
+        mr_hip_cfg = JointConfig("MG995/996R", "Positional", "Middle Right Hip", channel=15, i2c_address=self.LEFT_ADDR)
+        mr_knee_cfg = JointConfig("MG995/996R", "Positional", "Middle Right Knee", channel=8, i2c_address=self.RIGHT_ADDR)
+        mr_ankle_cfg = JointConfig("MG995/996R", "Positional", "Middle Right Ankle", channel=0, i2c_address=self.LEFT_ADDR)
+        self.legs['MR'] = Leg(Joint(mr_hip_cfg), Joint(mr_knee_cfg), Joint(mr_ankle_cfg), 
+                              LegConfig(mount_angle=45, position=Legs.MIDDLE_RIGHT, hip_trim_angle=-7))
+
+        # Rear Right Leg
+        rr_hip_cfg = JointConfig("MG995/996R", "Positional", "Rear Right Hip", channel=9, i2c_address=self.RIGHT_ADDR)
+        rr_knee_cfg = JointConfig("MG995/996R", "Positional", "Rear Right Knee", channel=7, i2c_address=self.LEFT_ADDR)
+        rr_ankle_cfg = JointConfig("MG995/996R", "Positional", "Rear Right Ankle", channel=5, i2c_address=self.RIGHT_ADDR)
+        self.legs['RR'] = Leg(Joint(rr_hip_cfg), Joint(rr_knee_cfg), Joint(rr_ankle_cfg), 
+                              LegConfig(mount_angle=45, position=Legs.REAR_RIGHT, hip_trim_angle=-15))
         
         return self
 
