@@ -16,7 +16,7 @@ class ObstacleSensor:
         self._on_loop = False
 
     def initialize(self):
-        GPIO.setmode(GPIO.BCM)
+        GPIO.setmode(GPIO.BOARD)
         GPIO.setup(self.obstacle_sensor_config.trig_gpio_pin, GPIO.OUT)  # trig pin is output
         GPIO.setup(self.obstacle_sensor_config.echo_gpio_pin, GPIO.IN)  # echo pin is input
         GPIO.OUTPUT(self.obstacle_sensor_config.trig_gpio_pin, GPIO.LOW)  # drives trig pin to 0V

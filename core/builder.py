@@ -69,7 +69,7 @@ class SpiderBuilder:
         return self
 
     def add_feedback_communicator(self):
-        self.feedback_communicator = LEDFeedbackCommunicator()
+        self.feedback_communicator = LEDFeedbackCommunicator(green_pin=11, white1_pin=22, white2_pin=18)
         return self
 
     def get_spider(self) -> Spider:
