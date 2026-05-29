@@ -1,8 +1,11 @@
 import time
+import logging
 
 from core.leg import Leg
-from constants import INIT_COORDINATES;
-import logging
+from constants import INIT_COORDINATES
+from hardware.feedback_communicator import FeedbackCommunicator
+from core.feedback_enums import FeedbackStatus
+
 
 class Spider:
     _instance = None
@@ -13,23 +16,25 @@ class Spider:
             cls._instance._is_initialized = False
         return cls._instance
 
-    def __init__(self, front_right_leg:Leg=None,
-                 front_left_leg:Leg=None,
-                 rear_right_leg:Leg=None,
-                 rear_left_leg:Leg=None,
-                 middle_left_leg:Leg=None,
-                 middle_right_leg:Leg=None):
+    def __init__(self, front_right_leg: Leg = None,
+                 front_left_leg: Leg = None,
+                 rear_right_leg: Leg = None,
+                 rear_left_leg: Leg = None,
+                 middle_left_leg: Leg = None,
+                 middle_right_leg: Leg = None,
+                 feedback_communicator: FeedbackCommunicator = None):
         self.controller_manager = None
         if getattr(self, '_is_initialized', False):
             return
-            
+
         self.front_right_leg = front_right_leg
         self.front_left_leg = front_left_leg
         self.rear_right_leg = rear_right_leg
         self.rear_left_leg = rear_left_leg
         self.middle_left_leg = middle_left_leg
         self.middle_right_leg = middle_right_leg
-        
+        self.feedback_communicator = feedback_communicator
+
         # Only populate legs if they were provided (to support get_instance without args)
         if all([front_right_leg, front_left_leg, rear_right_leg, rear_left_leg, middle_left_leg, middle_right_leg]):
             self.legs = (self.front_right_leg, self.middle_right_leg, self.rear_right_leg, self.rear_left_leg, self.middle_left_leg, self.front_left_leg)
@@ -61,20 +66,25 @@ class Spider:
 
         time.sleep(0.5)
         logging.info("Spider started and standing!")
+        if self.feedback_communicator:
+            self.feedback_communicator.communicate_startup(is_smooth=True)
         logging.info("Starting controllers")
         from controller.controller_manager import ControllerManager
         self.controller_manager = ControllerManager(spider=self)
         self.controller_manager.start()
 
-
     def shutdown(self):
         #for __leg in self.__legs:
         #    __leg.terminate()
         logging.info("Spider shutdown!")
+        if self.feedback_communicator:
+            self.feedback_communicator.shutdown()
 
     def hibernate(self):
         self.return_to_neutral_smoothly()
         logging.info("Spider in hibernate!")
+        if self.feedback_communicator:
+            self.feedback_communicator.communicate_status(FeedbackStatus.HIBERNATE)
 
     def return_to_neutral_smoothly(self, steps=15, step_delay=0.015):
         """Gradually moves all legs from their current positions to INIT_COORDINATES."""

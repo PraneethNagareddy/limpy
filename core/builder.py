@@ -5,12 +5,15 @@ from hardware.joint import Joint
 from hardware.config.joint_config import JointConfig
 from hardware.obstacle_sensor import ObstacleSensor
 from hardware.config.obstacle_sensor_config import ObstacleSensorConfig
+from hardware.feedback_communicator import FeedbackCommunicator
+from hardware.led_feedback_communicator import LEDFeedbackCommunicator
 from type import Legs
 
 class SpiderBuilder:
     def __init__(self):
         self.legs = {}
         self.sensors = {}
+        self.feedback_communicator: FeedbackCommunicator = None
         # Centralizing addresses makes it easier to debug the PCA9685 boards
         self.LEFT_ADDR = 0x41
         self.RIGHT_ADDR = 0x40
@@ -65,6 +68,10 @@ class SpiderBuilder:
         self.sensors['front'] = ObstacleSensor(config, front_obstacle_callback)
         return self
 
+    def add_feedback_communicator(self):
+        self.feedback_communicator = LEDFeedbackCommunicator()
+        return self
+
     def get_spider(self) -> Spider:
         """Finalizes and returns the Singleton Spider instance."""
         return Spider(
@@ -73,7 +80,8 @@ class SpiderBuilder:
             rear_right_leg=self.legs['RR'],
             rear_left_leg=self.legs['RL'],
             middle_left_leg=self.legs['ML'],
-            middle_right_leg=self.legs['MR']
+            middle_right_leg=self.legs['MR'],
+            feedback_communicator=self.feedback_communicator
         )
 
 # --- Initialization ---

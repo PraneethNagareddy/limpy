@@ -1,6 +1,8 @@
 from core.spider import Spider
 from constants import *
 from kinematics.gait.gait import WalkingGait
+from hardware.feedback_communicator import FeedbackCommunicator # Import FeedbackCommunicator
+from core.feedback_enums import FeedbackStatus # Import FeedbackStatus
 
 import time
 import math
@@ -10,6 +12,13 @@ class TripodGait(WalkingGait):
     def __init__(self, spider: Spider = None):
         super().__init__(spider)
         self.gait_start_time = None
+        self._is_moving = False # Track movement status
+
+    def _set_movement_status(self, is_moving: bool):
+        if self._is_moving != is_moving:
+            self._is_moving = is_moving
+            if self.spider and self.spider.feedback_communicator:
+                self.spider.feedback_communicator.communicate_movement(is_moving)
 
     def _get_phase(self):
         if self.gait_start_time is None:
@@ -25,7 +34,10 @@ class TripodGait(WalkingGait):
         # If no movement is requested, smoothly return to neutral stance
         if abs(x) < 0.1 and abs(y) < 0.1:
             self.return_to_neutral_smoothly()
+            self._set_movement_status(False) # No movement
             return
+
+        self._set_movement_status(True) # Movement started
 
         magnitude = math.sqrt(x ** 2 + y ** 2)
         if magnitude > 1.0:
@@ -89,6 +101,7 @@ class TripodGait(WalkingGait):
         (target_x, target_y, target_z) = INIT_COORDINATES
         for leg in self.spider.legs:
             leg.move_to_position(target_x, target_y, target_z, with_ease=False) # Use with_ease for smooth transition
+        self._set_movement_status(False) # No movement
 
     def return_to_neutral_smoothly(self, steps=15, step_delay=0.015):
         """Gradually moves all legs from their current positions to INIT_COORDINATES."""
@@ -117,6 +130,7 @@ class TripodGait(WalkingGait):
             time.sleep(step_delay)
 
         self.gait_start_time = None
+        self._set_movement_status(False) # No movement
 
     def sit_down_smoothly(self, steps=20, step_delay=0.03):
         """Gradually lowers the robot's belly to the ground by raising the feet."""
@@ -144,6 +158,7 @@ class TripodGait(WalkingGait):
                 leg.move_to_position(inter_x, inter_y, inter_z)
 
             time.sleep(step_delay)
+        self._set_movement_status(False) # No movement
 
         # Optional: If your servo library/hardware class has a method to cut torque/power,
         # call it here so the servos don't buzz while resting on the floor.
@@ -153,7 +168,10 @@ class TripodGait(WalkingGait):
         # Only turn if joystick is actively being pressed beyond a deadzone
         magnitude = math.sqrt(rx ** 2 + ry ** 2)
         if magnitude < 0.1:
+            self._set_movement_status(False) # No movement
             return
+
+        self._set_movement_status(True) # Movement started
 
         # Continuous rotation based strictly on the horizontal axis of the right joystick (rx)
         # Positive rx -> turn right, Negative rx -> turn left
@@ -208,6 +226,7 @@ class TripodGait(WalkingGait):
             leg.move_to_position(target_x, NEUTRAL_Y, target_z)
 
     def walk_forward(self, stride_distance_cm=5):
+        self._set_movement_status(True) # Movement started
         # Code to move three legs off ground at once
         phase = self._get_phase()
 
@@ -255,6 +274,7 @@ class TripodGait(WalkingGait):
             leg.move_to_position(target_x, NEUTRAL_Y, target_z)
 
     def walk_backward(self, stride_distance_cm=5):
+        self._set_movement_status(True) # Movement started
         phase = self._get_phase()
 
         for leg in self.spider.legs:
@@ -295,6 +315,7 @@ class TripodGait(WalkingGait):
 
     def turn_left(self):
         logging.info(f"Turning left")
+        self._set_movement_status(True) # Movement started
         phase = self._get_phase()
 
         TURN_ANGLE = 30  # degrees
@@ -342,6 +363,7 @@ class TripodGait(WalkingGait):
 
     def turn_right(self):
         logging.info(f"Turning right")
+        self._set_movement_status(True) # Movement started
         phase = self._get_phase()
 
         TURN_ANGLE = 30  # degrees
@@ -385,6 +407,7 @@ class TripodGait(WalkingGait):
             leg.move_to_position(target_x, NEUTRAL_Y, target_z)
 
     def step_left(self):
+        self._set_movement_status(True) # Movement started
         phase = self._get_phase()
 
         for leg in self.spider.legs:
@@ -418,6 +441,7 @@ class TripodGait(WalkingGait):
             leg.move_to_position(NEUTRAL_X, target_y, target_z)
 
     def step_right(self):
+        self._set_movement_status(True) # Movement started
         phase = self._get_phase()
 
         for leg in self.spider.legs:
