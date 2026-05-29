@@ -21,7 +21,7 @@ class LEDFeedbackCommunicator(FeedbackCommunicator):
         self.pwm_objects = {}
         self.pwm_frequency = 100 # Hz
 
-        GPIO.setmode(GPIO.BOARD)
+        # GPIO.setmode(GPIO.BOARD) # Removed: GPIO mode should be set once in main.py
         GPIO.setwarnings(False) # Suppress warnings
 
         for pin in self.pins.values():

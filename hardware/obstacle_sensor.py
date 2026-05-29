@@ -16,10 +16,10 @@ class ObstacleSensor:
         self._on_loop = False
 
     def initialize(self):
-        GPIO.setmode(GPIO.BOARD)
+        # GPIO.setmode(GPIO.BOARD) # Removed: GPIO mode should be set once in main.py
         GPIO.setup(self.obstacle_sensor_config.trig_gpio_pin, GPIO.OUT)  # trig pin is output
         GPIO.setup(self.obstacle_sensor_config.echo_gpio_pin, GPIO.IN)  # echo pin is input
-        GPIO.OUTPUT(self.obstacle_sensor_config.trig_gpio_pin, GPIO.LOW)  # drives trig pin to 0V
+        GPIO.output(self.obstacle_sensor_config.trig_gpio_pin, GPIO.LOW)  # drives trig pin to 0V
         time.sleep(2)
         logging.info("Obstacle sensor initialized")
 

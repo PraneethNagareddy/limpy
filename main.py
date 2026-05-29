@@ -1,9 +1,12 @@
+import RPi.GPIO as GPIO # Import RPi.GPIO
 from core.builder import SpiderBuilder
 from core.spider import Spider
 
 import logging
 
 logging.basicConfig(level=logging.INFO, format='\r%(asctime)s - %(levelname)s - %(message)s\r')
+
+GPIO.setmode(GPIO.BOARD) # Set GPIO mode to BOARD once at the beginning
 
 builder = SpiderBuilder()
 (builder
@@ -13,5 +16,3 @@ builder = SpiderBuilder()
 
 # Now your 2.2kg robot is ready to walk!
 Spider.get().startup()
-
-
