@@ -69,7 +69,8 @@ class SpiderBuilder:
         return self
 
     def add_feedback_communicator(self):
-        self.feedback_communicator = LEDFeedbackCommunicator(green_pin=11, white1_pin=22, white2_pin=18)
+        # Changed pin numbers from BOARD to BCM. Ensure GPIO.setmode(GPIO.BCM) is used elsewhere.
+        self.feedback_communicator = LEDFeedbackCommunicator(green_pin=17, white1_pin=25, white2_pin=24)
         return self
 
     def get_spider(self) -> Spider:
