@@ -18,35 +18,45 @@ def setup_gpio():
 
 def measure_distance():
     """Measures distance using the HC-SR04 sensor."""
-    # Ensure trigger is low before pulsing
+    # Ensure trigger is low for a moment to ensure a clean pulse
     GPIO.output(GPIO_TRIGGER, False)
-    time.sleep(0.000002) # 2us delay
+    time.sleep(0.000002) # Small delay to ensure clean state
 
     # Send a 10us pulse to the trigger pin
     GPIO.output(GPIO_TRIGGER, True)
-    time.sleep(0.00001)
+    time.sleep(0.00001) # 10 microsecond pulse
     GPIO.output(GPIO_TRIGGER, False)
 
-    pulse_start = time.time()
-    pulse_end = time.time()
+    pulse_start = 0
+    pulse_end = 0
+
+    # Max duration for 400cm round trip is ~23.32ms. Set timeout slightly higher.
+    # A 50ms timeout should be sufficient for max range + some buffer.
+    timeout_limit = time.time() + 0.05 # 50ms timeout for the entire echo process
 
     # Wait for echo to go high
-    timeout = time.time() + 0.02 # 20ms timeout for echo to start
     while GPIO.input(GPIO_ECHO) == 0:
-        if time.time() > timeout:
+        if time.time() > timeout_limit:
             # print("Timeout: Echo never went HIGH") # Uncomment for debugging
             return -1
-    pulse_start = time.time() # Capture time when it *first* goes high
+    pulse_start = time.time() # Capture time *immediately after* it goes HIGH
 
     # Wait for echo to go low
-    timeout = time.time() + 0.02 # 20ms timeout for echo to end
     while GPIO.input(GPIO_ECHO) == 1:
-        if time.time() > timeout:
+        if time.time() > timeout_limit: # Use the same overall timeout
             # print("Timeout: Echo never went LOW") # Uncomment for debugging
             return -1
-    pulse_end = time.time() # Capture time when it *first* goes low
+    pulse_end = time.time() # Capture time *immediately after* it goes LOW
 
     duration = pulse_end - pulse_start
+    
+    # Filter out obviously bad durations (e.g., negative or excessively long/short)
+    # Min duration for 2cm round trip is (2*2)/34300 = 0.0001166s = 116.6us
+    # Max duration for 400cm round trip is (400*2)/34300 = 0.02332s = 23.32ms
+    if duration < 0.0001 or duration > 0.025: # Roughly 100us to 25ms
+        # print(f"Filtered out bad duration: {duration*1000000:.2f} us") # Uncomment for debugging
+        return -1
+
     distance = (duration * 34300) / 2 # Speed of sound is 34300 cm/s
     return round(distance, 2)
 
