@@ -16,37 +16,38 @@ def setup_gpio():
     GPIO.output(GPIO_TRIGGER, False) # Ensure trigger is low
     print("GPIO setup complete (BCM mode).")
 
-def pulse_trigger():
-    """Sends a 10us pulse to the trigger pin."""
-    GPIO.output(GPIO_TRIGGER, True)
-    time.sleep(0.00001) # 10 microsecond pulse
-    GPIO.output(GPIO_TRIGGER, False)
-
 def measure_distance():
     """Measures distance using the HC-SR04 sensor."""
-    pulse_trigger()
+    # Ensure trigger is low before pulsing
+    GPIO.output(GPIO_TRIGGER, False)
+    time.sleep(0.000002) # 2us delay
 
-    pulse_start = 0
-    pulse_end = 0
+    # Send a 10us pulse to the trigger pin
+    GPIO.output(GPIO_TRIGGER, True)
+    time.sleep(0.00001)
+    GPIO.output(GPIO_TRIGGER, False)
+
+    pulse_start = time.time()
+    pulse_end = time.time()
 
     # Wait for echo to go high
-    timeout_start = time.time()
+    timeout = time.time() + 0.02 # 20ms timeout for echo to start
     while GPIO.input(GPIO_ECHO) == 0:
-        pulse_start = time.time()
-        if time.time() - timeout_start > 0.02: # 20ms timeout (max range is ~400cm)
-            # print("Echo pulse start timeout!")
+        if time.time() > timeout:
+            # print("Timeout: Echo never went HIGH") # Uncomment for debugging
             return -1
+    pulse_start = time.time() # Capture time when it *first* goes high
 
     # Wait for echo to go low
-    timeout_start = time.time()
+    timeout = time.time() + 0.02 # 20ms timeout for echo to end
     while GPIO.input(GPIO_ECHO) == 1:
-        pulse_end = time.time()
-        if time.time() - timeout_start > 0.1: # Timeout after 100ms
-            print("Echo pulse end timeout!")
+        if time.time() > timeout:
+            # print("Timeout: Echo never went LOW") # Uncomment for debugging
             return -1
+    pulse_end = time.time() # Capture time when it *first* goes low
 
-    pulse_duration = pulse_end - pulse_start
-    distance = pulse_duration * 17150 # Speed of sound in cm/s divided by 2 (to and fro)
+    duration = pulse_end - pulse_start
+    distance = (duration * 34300) / 2 # Speed of sound is 34300 cm/s
     return round(distance, 2)
 
 def get_filtered_distance(samples=5):
@@ -55,7 +56,7 @@ def get_filtered_distance(samples=5):
     for _ in range(samples):
         dist = measure_distance()
         # HC-SR04 range is ~2cm to 400cm. Ignore obvious garbage.
-        if 2.0 <= dist <= 450.0:
+        if 2.0 <= dist <= 450.0: # Increased max range slightly for robustness
             valid_readings.append(dist)
         time.sleep(0.02) # Small gap between bursts
 
@@ -68,30 +69,19 @@ def get_filtered_distance(samples=5):
 def main():
     setup_gpio()
 
-    print("\n--- HC-SR04 Test Script ---")
-    print("Phase 1: Voltage Verification")
-    print("-----------------------------")
+    print("\n--- HC-SR04 Distance Measurement Test ---")
     print(f"TRIG pin (BCM): {GPIO_TRIGGER}")
     print(f"ECHO pin (BCM): {GPIO_ECHO}")
-    print("\nACTION: Please prepare to measure the voltage on your ECHO pin (after the voltage divider).")
-    input("Press Enter to send a single TRIG pulse and then measure the ECHO voltage...")
-
-    pulse_trigger()
-    print("TRIG pulse sent. Measure the voltage on the ECHO pin now.")
-    print("Expected voltage for a HIGH signal should be around 3.3V (after divider).")
-    input("Press Enter when you have measured the voltage and are ready to proceed...")
-
-    print("\nPhase 2: Distance Measurement")
-    print("-----------------------------")
-    print("ACTION: If you haven't already, connect the ECHO pin (BCM 23) to your Raspberry Pi.")
-    input("Press Enter to start continuous distance measurement (Ctrl+C to stop)...")
+    print("Starting continuous distance measurement (Ctrl+C to stop)...")
 
     try:
         while True:
             dist = get_filtered_distance()
             if dist != -1:
                 print(f"Distance: {dist} cm")
-            time.sleep(1) # Measure every second
+            else:
+                print("Measuring...") # Indicate that a measurement was attempted but failed
+            time.sleep(0.5) # Measure twice per second
     except KeyboardInterrupt:
         print("\nMeasurement stopped by user.")
     finally:
