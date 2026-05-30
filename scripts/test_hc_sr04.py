@@ -26,15 +26,15 @@ def measure_distance():
     """Measures distance using the HC-SR04 sensor."""
     pulse_trigger()
 
-    pulse_start = time.time()
-    pulse_end = time.time()
+    pulse_start = 0
+    pulse_end = 0
 
     # Wait for echo to go high
     timeout_start = time.time()
     while GPIO.input(GPIO_ECHO) == 0:
         pulse_start = time.time()
-        if time.time() - timeout_start > 0.1: # Timeout after 100ms
-            print("Echo pulse start timeout!")
+        if time.time() - timeout_start > 0.02: # 20ms timeout (max range is ~400cm)
+            # print("Echo pulse start timeout!")
             return -1
 
     # Wait for echo to go low
@@ -47,8 +47,23 @@ def measure_distance():
 
     pulse_duration = pulse_end - pulse_start
     distance = pulse_duration * 17150 # Speed of sound in cm/s divided by 2 (to and fro)
-    distance = round(distance, 2)
-    return distance
+    return round(distance, 2)
+
+def get_filtered_distance(samples=5):
+    """Takes multiple samples and returns the median to filter out noise."""
+    valid_readings = []
+    for _ in range(samples):
+        dist = measure_distance()
+        # HC-SR04 range is ~2cm to 400cm. Ignore obvious garbage.
+        if 2.0 <= dist <= 450.0:
+            valid_readings.append(dist)
+        time.sleep(0.02) # Small gap between bursts
+
+    if not valid_readings:
+        return -1
+    
+    valid_readings.sort()
+    return valid_readings[len(valid_readings) // 2]
 
 def main():
     setup_gpio()
@@ -73,7 +88,7 @@ def main():
 
     try:
         while True:
-            dist = measure_distance()
+            dist = get_filtered_distance()
             if dist != -1:
                 print(f"Distance: {dist} cm")
             time.sleep(1) # Measure every second

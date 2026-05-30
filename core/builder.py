@@ -64,7 +64,13 @@ class SpiderBuilder:
         return self
 
     def add_sensors(self, front_obstacle_callback):
-        config = ObstacleSensorConfig("HC-SR04", "Front Obstacle Sensor", trig_gpio_pin=0, echo_gpio_pin=0)
+        # Using BCM pins 27 and 23 as verified in test_hc_sr04.py
+        config = ObstacleSensorConfig(
+            model="HC-SR04", 
+            name="Front Obstacle Sensor", 
+            trig_gpio_pin=27, 
+            echo_gpio_pin=23
+        )
         self.sensors['front'] = ObstacleSensor(config, front_obstacle_callback)
         return self
 
