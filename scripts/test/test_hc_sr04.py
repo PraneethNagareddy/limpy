@@ -17,7 +17,7 @@ def setup_gpio():
     print("GPIO setup complete (BCM mode).")
 
 def measure_distance():
-    """Measures distance using the HC-SR04 sensor with GPIO.wait_for_edge."""
+    """Measures distance using the HC-SR04 sensor."""
     # Ensure trigger is low for a moment to ensure a clean pulse
     GPIO.output(GPIO_TRIGGER, False)
     time.sleep(0.000002) # Small delay to ensure clean state
@@ -27,21 +27,28 @@ def measure_distance():
     time.sleep(0.00001) # 10 microsecond pulse
     GPIO.output(GPIO_TRIGGER, False)
 
-    # Wait for the echo pin to go HIGH (rising edge)
-    # Timeout is in milliseconds. 50ms is enough for max range ~400cm (23.32ms round trip)
-    pulse_start_time = GPIO.wait_for_edge(GPIO_ECHO, GPIO.RISING, timeout=50)
-    if pulse_start_time is None: # Timeout occurred, no rising edge detected
-        # print("Timeout: Echo never went HIGH") # Uncomment for debugging
-        return -1
-    
-    # Wait for the echo pin to go LOW (falling edge)
-    pulse_end_time = GPIO.wait_for_edge(GPIO_ECHO, GPIO.FALLING, timeout=50)
-    if pulse_end_time is None: # Timeout occurred, no falling edge detected
-        # print("Timeout: Echo never went LOW") # Uncomment for debugging
-        return -1
+    pulse_start = 0
+    pulse_end = 0
 
-    # GPIO.wait_for_edge returns the time in seconds since epoch when the edge was detected.
-    duration = pulse_end_time - pulse_start_time
+    # Max duration for 400cm round trip is ~23.32ms. Set timeout slightly higher.
+    # A 50ms timeout should be sufficient for max range + some buffer.
+    timeout_limit = time.time() + 0.05 # 50ms timeout for the entire echo process
+
+    # Wait for echo to go high
+    while GPIO.input(GPIO_ECHO) == 0:
+        if time.time() > timeout_limit:
+            # print("Timeout: Echo never went HIGH") # Uncomment for debugging
+            return -1
+    pulse_start = time.time() # Capture time *immediately after* it goes HIGH
+
+    # Wait for echo to go low
+    while GPIO.input(GPIO_ECHO) == 1:
+        if time.time() > timeout_limit: # Use the same overall timeout
+            # print("Timeout: Echo never went LOW") # Uncomment for debugging
+            return -1
+    pulse_end = time.time() # Capture time *immediately after* it goes LOW
+
+    duration = pulse_end - pulse_start
     
     # Filter out obviously bad durations (e.g., negative or excessively long/short)
     # Min duration for 2cm round trip is (2*2)/34300 = 0.0001166s = 116.6us
