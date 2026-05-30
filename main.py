@@ -6,7 +6,7 @@ import logging
 
 logging.basicConfig(level=logging.INFO, format='\r%(asctime)s - %(levelname)s - %(message)s\r')
 
-GPIO.setmode(GPIO.BCM) # Set GPIO mode to BOARD once at the beginning
+GPIO.setmode(GPIO.BCM)
 
 builder = SpiderBuilder()
 (builder
